@@ -1,8 +1,8 @@
 const contact = {
-  phone: "+44 0000 000000",
-  phoneHref: "tel:+440000000000",
-  email: "info@cpmg.co.uk",
-  careersEmail: "careers@cpmg.co.uk",
+  phone: "02039322723",
+  phoneHref: "tel:02039322723",
+  email: "Info@cpmanagementgroup.co.uk",
+  careersEmail: "Info@cpmanagementgroup.co.uk",
   office: "56 Daventry Road, Bristol, England, BS4 1DQ",
   hours: "Monday to Sunday: 7:00am to 8:00pm"
 };
