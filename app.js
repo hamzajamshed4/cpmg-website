@@ -139,7 +139,8 @@ function render() {
   if (serviceMatch) servicePage(serviceMatch);
   else if (routes[path]) routes[path]();
   else notFoundPage();
-  app.focus();
+  window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  app.focus({ preventScroll: true });
   bindForms();
   bindWizard();
   bindAdmin();
@@ -169,6 +170,29 @@ function hero({ eyebrow, title, text, primary = "Book Now", secondary = "Get a Q
         <h2>Insured property support with fast, practical communication.</h2>
         <p>Domestic and commercial bookings, quote requests and urgent property service enquiries handled by one team.</p>
       </aside>
+    </div>
+  </section>`;
+}
+
+function pageHeader({ eyebrow, title, text, primary = "", secondary = "" }) {
+  const actions = primary || secondary ? `<div class="actions slim-actions">${primary ? `<a class="button primary" href="/booking" data-link>${primary}</a>` : ""}${secondary ? `<a class="button outline" href="/contact" data-link>${secondary}</a>` : ""}</div>` : "";
+  return `<section class="page-header">
+    <div class="section-inner">
+      <div>
+        <div class="eyebrow">${eyebrow}</div>
+        <h1>${title}</h1>
+        <p>${text}</p>
+        ${actions}
+      </div>
+    </div>
+  </section>`;
+}
+
+function bookingHeader() {
+  return `<section class="booking-hero">
+    <div class="section-inner">
+      <h1>Book Your Service</h1>
+      <p>Select your service, share your details and CPMG will confirm availability and the final quote.</p>
     </div>
   </section>`;
 }
@@ -228,14 +252,12 @@ function categoryPage(category) {
   const isDomestic = category === "domestic";
   const list = services.filter((item) => item.category === category);
   setMeta(`${isDomestic ? "Domestic" : "Commercial"} Services | CPMG`, `${isDomestic ? "Domestic cleaning and garden support" : "Commercial cleaning and property maintenance"} services from Crown Property Management Group Ltd.`);
-  app.innerHTML = `${hero({
+  app.innerHTML = `${pageHeader({
     eyebrow: isDomestic ? "Domestic services" : "Commercial services",
     title: isDomestic ? "Reliable Domestic Cleaning & Garden Services" : "Commercial Cleaning & Property Maintenance Support",
     text: isDomestic ? "Book professional carpet cleaning, end of tenancy cleaning, deep cleaning and outdoor property support for homes across the UK." : "Request quotes for cleaning, fire alarm callouts, grounds care, waste removal and property support for businesses and managed sites.",
     primary: isDomestic ? "Book Domestic Service" : "Request a Commercial Quote",
-    secondary: "Speak to CPMG",
-    image: isDomestic ? serviceImages.domestic : serviceImages.commercial,
-    compact: true
+    secondary: "Speak to CPMG"
   })}
   <section class="section"><div class="section-inner">
     <div class="section-head"><div><span class="eyebrow">${category}</span><h2>${isDomestic ? "Domestic service range" : "Commercial service range"}</h2></div><p>${isDomestic ? "Clear from prices are shown where practical." : "Commercial jobs are priced around site specification, frequency, access and urgency."}</p></div>
@@ -249,14 +271,12 @@ function categoryPage(category) {
 function servicePage(item) {
   setMeta(item.metaTitle, item.metaDescription);
   const related = services.filter((other) => other.category === item.category && other.slug !== item.slug).slice(0, 3);
-  app.innerHTML = `${hero({
+  app.innerHTML = `${pageHeader({
     eyebrow: item.category,
     title: item.title,
     text: item.heroSubtitle,
     primary: item.ctaButtonText,
-    secondary: "Speak to CPMG",
-    image: item.heroImage,
-    compact: true
+    secondary: "Speak to CPMG"
   })}
   <section class="section"><div class="section-inner">
     ${breadcrumbs([{ label: item.category === "domestic" ? "Domestic" : "Commercial", href: `/services/${item.category}` }, { label: item.title }])}
@@ -332,8 +352,8 @@ function cta(title, text, primary, secondary) {
 
 function bookingPage() {
   setMeta("Book a Service | CPMG", "Use the CPMG booking wizard to request a domestic or commercial cleaning, maintenance or property support service.");
-  app.innerHTML = `${hero({ eyebrow: "Booking", title: "Book a Service or Request a Quote", text: "Prices are shown as from prices or quote-based. CPMG will confirm the final quote before work begins.", compact: true })}
-  <section class="section"><div class="section-inner wizard" data-wizard></div></section>`;
+  app.innerHTML = `${bookingHeader()}
+  <section class="booking-section"><div class="section-inner wizard" data-wizard></div></section>`;
 }
 
 let bookingState = { step: 1, service: "", name: "", email: "", phone: "", address: "", postcode: "", propertyType: "", notes: "", date: "", time: "", urgency: "Flexible", consent: false };
@@ -345,7 +365,7 @@ function bindWizard() {
 }
 
 function renderWizard(wizard) {
-  wizard.innerHTML = `<div class="wizard-steps">${[1,2,3,4].map((i) => `<span class="${bookingState.step >= i ? "active" : ""}"></span>`).join("")}</div>${wizardStep()}<p class="muted">Final prices may vary depending on property size, condition, location, access, and service requirements. CPMG will confirm the final quote before work begins.</p>`;
+  wizard.innerHTML = `${bookingProgress()}${wizardStep()}<p class="muted price-note">Final prices may vary depending on property size, condition, location, access, and service requirements. CPMG will confirm the final quote before work begins.</p>`;
   wizard.querySelectorAll("[data-service]").forEach((button) => button.addEventListener("click", () => { bookingState.service = button.dataset.service; bookingState.step = 2; renderWizard(wizard); }));
   wizard.querySelectorAll("[data-next]").forEach((button) => button.addEventListener("click", () => { saveWizardFields(wizard); if (validateWizard(wizard)) { bookingState.step += 1; renderWizard(wizard); } }));
   wizard.querySelectorAll("[data-back]").forEach((button) => button.addEventListener("click", () => { saveWizardFields(wizard); bookingState.step -= 1; renderWizard(wizard); }));
@@ -353,12 +373,31 @@ function renderWizard(wizard) {
   if (submit) submit.addEventListener("click", () => { saveWizardFields(wizard); if (!bookingState.consent) return alert("Please confirm consent before submitting."); saveLead("bookings", { ...bookingState, status: "new", createdAt: new Date().toISOString(), sourcePage: location.pathname }); wizard.innerHTML = successMessage("Booking request received. CPMG will contact you to confirm availability and the final quote."); });
 }
 
+function bookingProgress() {
+  const labels = ["Select Service", "Property Details", "Date & Time", "Review"];
+  return `<div class="booking-progress">${labels.map((label, index) => {
+    const number = index + 1;
+    return `<div class="progress-step ${bookingState.step >= number ? "active" : ""}"><span>${number}</span><small>${label}</small></div>`;
+  }).join("")}</div>`;
+}
+
 function wizardStep() {
-  if (bookingState.step === 1) return `<h2>Step 1: Select service</h2><div class="grid three">${services.map((item) => `<button class="select-card ${bookingState.service === item.id ? "selected" : ""}" data-service="${item.id}"><div class="card-body"><span class="eyebrow">${item.category}</span><h3>${item.title}</h3><p>${item.shortDescription}</p><span class="service-price">${item.priceLabel}</span></div></button>`).join("")}</div>`;
-  if (bookingState.step === 2) return `<h2>Step 2: Property details</h2><div class="form-grid">${field("name","Full name",true)}${field("email","Email",true,"email")}${field("phone","Phone",true,"tel")}${field("address","Address",true)}${field("postcode","Postcode",true)}${selectField("propertyType","Property type",["House","Flat","Office","Retail premises","Apartment block","Commercial estate","Other"])}${field("notes","Notes",false,"textarea","full")}</div><div class="actions"><button class="outline" data-back>Back</button><button class="primary" data-next>Continue</button></div>`;
-  if (bookingState.step === 3) return `<h2>Step 3: Date and time</h2><div class="form-grid">${field("date","Preferred date",true,"date")}${selectField("time","Preferred time slot",["Morning","Afternoon","Evening","Any time"])}${selectField("urgency","Urgency",["Flexible","This week","Same-day if available","Emergency / urgent"])}</div><div class="actions"><button class="outline" data-back>Back</button><button class="primary" data-next>Review</button></div>`;
+  if (bookingState.step === 1) return `<h2>Select a Service</h2><div class="booking-service-grid">${services.map(bookingServiceCard).join("")}</div>`;
+  if (bookingState.step === 2) return `<h2>Property Details</h2><div class="form-grid">${field("name","Full name",true)}${field("email","Email",true,"email")}${field("phone","Phone",true,"tel")}${field("address","Address",true)}${field("postcode","Postcode",true)}${selectField("propertyType","Property type",["House","Flat","Office","Retail premises","Apartment block","Commercial estate","Other"])}${field("notes","Notes",false,"textarea","full")}</div><div class="actions"><button class="outline" data-back>Back</button><button class="primary" data-next>Continue</button></div>`;
+  if (bookingState.step === 3) return `<h2>Date and Time</h2><div class="form-grid">${field("date","Preferred date",true,"date")}${selectField("time","Preferred time slot",["Morning","Afternoon","Evening","Any time"])}${selectField("urgency","Urgency",["Flexible","This week","Same-day if available","Emergency / urgent"])}</div><div class="actions"><button class="outline" data-back>Back</button><button class="primary" data-next>Review</button></div>`;
   const item = services.find((serviceItem) => serviceItem.id === bookingState.service);
-  return `<h2>Step 4: Review and submit</h2><div class="card"><div class="card-body"><p><strong>Service:</strong> ${item?.title || ""}</p><p><strong>Contact:</strong> ${bookingState.name}, ${bookingState.email}, ${bookingState.phone}</p><p><strong>Address:</strong> ${bookingState.address}, ${bookingState.postcode}</p><p><strong>Preferred slot:</strong> ${bookingState.date} / ${bookingState.time} / ${bookingState.urgency}</p><p><strong>Notes:</strong> ${bookingState.notes || "None supplied"}</p></div></div><label class="full"><input type="checkbox" name="consent" ${bookingState.consent ? "checked" : ""}> I consent to CPMG contacting me about this enquiry.</label><div class="actions"><button class="outline" data-back>Back</button><button class="primary" data-submit-booking>Submit Request</button></div>`;
+  return `<h2>Review and Submit</h2><div class="card"><div class="card-body"><p><strong>Service:</strong> ${item?.title || ""}</p><p><strong>Contact:</strong> ${bookingState.name}, ${bookingState.email}, ${bookingState.phone}</p><p><strong>Address:</strong> ${bookingState.address}, ${bookingState.postcode}</p><p><strong>Preferred slot:</strong> ${bookingState.date} / ${bookingState.time} / ${bookingState.urgency}</p><p><strong>Notes:</strong> ${bookingState.notes || "None supplied"}</p></div></div><label class="full"><input type="checkbox" name="consent" ${bookingState.consent ? "checked" : ""}> I consent to CPMG contacting me about this enquiry.</label><div class="actions"><button class="outline" data-back>Back</button><button class="primary" data-submit-booking>Submit Request</button></div>`;
+}
+
+function bookingServiceCard(item) {
+  return `<button class="select-card compact-service ${bookingState.service === item.id ? "selected" : ""}" data-service="${item.id}">
+    <span class="service-icon">${item.title.slice(0, 1)}</span>
+    <span class="service-summary">
+      <strong>${item.title}</strong>
+      <small>${item.priceLabel}</small>
+    </span>
+    <span class="category-tag">${item.category}</span>
+  </button>`;
 }
 
 function saveWizardFields(scope) {
@@ -385,7 +424,7 @@ function selectField(name, label, options) {
 
 function contactPage() {
   setMeta("Contact CPMG | Cleaning & Property Maintenance Enquiries", "Contact Crown Property Management Group Ltd for domestic or commercial cleaning, maintenance and property support enquiries.");
-  app.innerHTML = `${hero({ eyebrow: "Contact", title: "Speak to CPMG Today", text: "Send a general enquiry, quote request or service question and the CPMG team will respond as soon as possible.", compact: true })}
+  app.innerHTML = `${pageHeader({ eyebrow: "Contact", title: "Speak to CPMG Today", text: "Send a general enquiry, quote request or service question and the CPMG team will respond as soon as possible." })}
   <section class="section"><div class="section-inner split">
     ${contactForm()}
     <aside class="quote-band"><h2>Contact information</h2><p><strong>Phone:</strong> ${contact.phone}</p><p><strong>Email:</strong> ${contact.email}</p><p><strong>Headquarters:</strong> ${contact.office}</p><p><strong>Coverage:</strong> UK-wide service availability.</p><p><strong>Opening hours:</strong> ${contact.hours}</p></aside>
@@ -405,14 +444,14 @@ function contactForm() {
 
 function aboutPage() {
   setMeta("About CPMG | Crown Property Management Group Ltd", "Learn about Crown Property Management Group Ltd, a UK property services company providing domestic and commercial cleaning, maintenance and support.");
-  app.innerHTML = `${hero({ eyebrow: "About CPMG", title: "Professional Property Support for Homes, Landlords and Businesses", text: "Crown Property Management Group Ltd was created to provide reliable, professional and flexible property support services across the UK.", compact: true })}
+  app.innerHTML = `${pageHeader({ eyebrow: "About CPMG", title: "Professional Property Support for Homes, Landlords and Businesses", text: "Crown Property Management Group Ltd was created to provide reliable, professional and flexible property support services across the UK." })}
   <section class="section"><div class="section-inner split"><div><h2>Company overview</h2><p>CPMG provides cleaning, maintenance, grounds care, waste removal and related property services across domestic and commercial sectors. The company focuses on insured work, DBS-checked workers where applicable, fast response and clear communication.</p><p>From one-off domestic cleans to recurring commercial property support, CPMG helps customers keep spaces clean, safe and presentable.</p></div><div class="grid two"><div class="mini-kpi"><strong>UK-wide</strong><p>Service coverage focus</p></div><div class="mini-kpi"><strong>Insured</strong><p>Professional delivery model</p></div><div class="mini-kpi"><strong>Domestic + Commercial</strong><p>Flexible property support</p></div><div class="mini-kpi"><strong>5-star focus</strong><p>Satisfaction-led service</p></div></div></div></section>
   ${gallerySection()}${whyChoose()}${testimonialSection()}${cta("Ready for a Cleaner, Safer Property?", "Book a service or speak to CPMG about your property support requirements.", "Book Now", "Contact CPMG")}`;
 }
 
 function careersPage() {
   setMeta("Work With CPMG | Careers", "Apply to work with Crown Property Management Group Ltd across cleaning, maintenance, grounds care, waste removal and property support roles.");
-  app.innerHTML = `${hero({ eyebrow: "Work With Us", title: "Work With CPMG", text: "Join Crown Property Management Group Ltd and become part of a growing UK property services team.", compact: true })}
+  app.innerHTML = `${pageHeader({ eyebrow: "Work With Us", title: "Work With CPMG", text: "Join Crown Property Management Group Ltd and become part of a growing UK property services team." })}
   <section class="section"><div class="section-inner split">
     <div><h2>Who we are</h2><p>CPMG provides cleaning, maintenance, grounds care, waste removal and property support services across domestic and commercial sectors.</p><h2>Benefits</h2><ul class="list"><li>Training and PPE</li><li>Flexible hours</li><li>Growth opportunities</li><li>Domestic and commercial work</li><li>Supportive team</li><li>UK-wide opportunities</li></ul><p class="muted">With your consent, applications may be stored for up to 12 months for suitable future opportunities.</p></div>
     <form class="form" data-lead-form="careers"><h2>Application form</h2><div class="form-grid">
@@ -503,13 +542,13 @@ function termsPage() {
 }
 
 function legalPage(title, sections) {
-  return `${hero({ eyebrow: "Legal", title, text: "Important information for customers, applicants and commercial clients.", compact: true })}
+  return `${pageHeader({ eyebrow: "Legal", title, text: "Important information for customers, applicants and commercial clients." })}
   <section class="section"><article class="section-inner legal">${sections.map(([heading, body]) => `<h2>${heading}</h2><p>${body}</p>`).join("")}</article></section>`;
 }
 
 function adminPage() {
   setMeta("CPMG Admin MVP", "Local MVP admin panel for service and lead review.");
-  app.innerHTML = `${hero({ eyebrow: "Admin MVP", title: "Service Catalogue & Lead Capture", text: "This local MVP shows the data model, editable service catalogue pattern and captured lead records stored in browser localStorage.", compact: true })}
+  app.innerHTML = `${pageHeader({ eyebrow: "Admin MVP", title: "Service Catalogue & Lead Capture", text: "This local MVP shows the data model, editable service catalogue pattern and captured lead records stored in browser localStorage." })}
   <section class="section"><div class="section-inner admin-panel">
     <h2>Manage services and prices</h2>
     <form class="grid three" data-service-admin>${services.map((item) => `<label class="card"><span class="card-body"><strong>${item.title}</strong><span class="muted">${item.category}</span><input name="${item.id}" value="${item.priceLabel}" aria-label="${item.title} price label"></span></label>`).join("")}<button class="primary full">Save service prices</button></form>
@@ -555,7 +594,7 @@ function escapeHtml(text) {
 
 function notFoundPage() {
   setMeta("Page Not Found | CPMG", "The requested CPMG page could not be found.");
-  app.innerHTML = `${hero({ eyebrow: "404", title: "Page Not Found", text: "The page may have moved. You can return home, book a service or contact CPMG.", compact: true })}`;
+  app.innerHTML = `${pageHeader({ eyebrow: "404", title: "Page Not Found", text: "The page may have moved. You can return home, book a service or contact CPMG.", primary: "Book Now", secondary: "Contact CPMG" })}`;
 }
 
 function injectSchema(path, item) {
