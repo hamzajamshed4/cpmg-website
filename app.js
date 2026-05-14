@@ -15,6 +15,7 @@ const sectors = ["Offices", "Apartment blocks", "Letting agents", "Landlords", "
 const serviceOptions = ["Carpet Cleaning", "End of Tenancy Cleaning", "Deep Cleaning", "Landscaping and Garden", "Office Cleaning", "Communal Area Cleaning", "Fire Alarm Callout", "Waste Removal", "Other"];
 const bookingServiceTitles = serviceOptions.filter((item) => item !== "Other");
 const serviceCommitments = ["Clear enquiry handling", "Quote confirmation before work begins", "Accessible contact routes", "Professional conduct on site"];
+const leadStatuses = ["new", "contacted", "quoted", "booked", "completed", "cancelled"];
 
 function publicServiceName(title) {
   return title === "Landscaping and Garden Services" ? "Landscaping and Garden" : title;
@@ -85,7 +86,6 @@ function service(category, slug, title, shortDescription, priceLabel, image, inc
       "Final prices may vary depending on property size, condition, location, access and service requirements. CPMG will confirm the final quote before work begins."
     ],
     galleryImages: [image, category === "domestic" ? serviceImages.garden : serviceImages.commercial, serviceImages.waste],
-    testimonial: null,
     faqs: faqPairs.length ? pairFaqs(faqPairs) : defaultFaqs(title),
     metaTitle: `${title} | CPMG`,
     metaDescription: shortDescription,
@@ -389,7 +389,7 @@ function sectorSection() {
 function commitmentsSection() {
   return `<section class="section"><div class="section-inner">
     <div class="section-head"><div><span class="eyebrow">Service standards</span><h2>What customers can expect</h2></div><p>No inflated promises: CPMG focuses on clear communication, practical quotes and professional attendance.</p></div>
-    <div class="grid four">${serviceCommitments.map((item) => `<article class="card testimonial"><div class="card-body"><h3>${item}</h3><p class="muted">Built into the enquiry and booking process.</p></div></article>`).join("")}</div>
+    <div class="grid four">${serviceCommitments.map((item) => `<article class="card commitment-card"><div class="card-body"><h3>${item}</h3><p class="muted">Built into the enquiry and booking process.</p></div></article>`).join("")}</div>
   </div></section>`;
 }
 
@@ -513,13 +513,12 @@ function showFormErrors(scope, errors) {
   });
 }
 
-async function submitLead(endpoint, data) {
+async function submitLead(endpoint, data, options = {}) {
   try {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
-    });
+    const init = options.multipart
+      ? { method: "POST", body: data }
+      : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) };
+    const response = await fetch(endpoint, init);
     const body = await response.json().catch(() => ({}));
     return { ok: response.ok && body.ok !== false, ...body };
   } catch {
@@ -601,7 +600,8 @@ function bindForms() {
         form.cvFile.closest("label").querySelector(".error").textContent = "Upload a PDF, DOC or DOCX file up to 5MB.";
         return;
       }
-      const data = Object.fromEntries(new FormData(form).entries());
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
       data.consent = data.consent === "on";
       data.privacyConsent = data.privacyConsent === "on";
       const clientErrors = validateLeadForm(form.dataset.leadForm, data);
@@ -623,7 +623,14 @@ function bindForms() {
       const endpoints = { enquiries: "/api/contact", careers: "/api/careers" };
       const button = form.querySelector("button");
       button.disabled = true;
-      const response = await submitLead(endpoints[form.dataset.leadForm], data);
+      const payload = form.dataset.leadForm === "careers" ? formData : data;
+      if (form.dataset.leadForm === "careers") {
+        formData.set("privacyConsent", data.privacyConsent ? "true" : "false");
+        formData.set("sourcePage", location.pathname);
+      } else {
+        data.sourcePage = location.pathname;
+      }
+      const response = await submitLead(endpoints[form.dataset.leadForm], payload, { multipart: form.dataset.leadForm === "careers" });
       if (response.ok) {
         saveLead(form.dataset.leadForm, data);
         form.outerHTML = successMessage(form.dataset.leadForm === "careers" ? "Application received. CPMG will contact you if your experience matches current or future opportunities." : "Enquiry received. CPMG will respond as soon as possible.");
@@ -712,13 +719,20 @@ function legalPage(title, sections) {
 }
 
 function adminPage() {
-  setMeta("CPMG Admin MVP", "Local MVP admin panel for service and lead review.");
-  app.innerHTML = `${pageHeader({ eyebrow: "Admin MVP", title: "Service Catalogue & Lead Capture", text: "This local MVP shows the data model, editable service catalogue pattern and captured lead records stored in browser localStorage." })}
+  setMeta("CPMG Admin MVP", "Protected local admin panel for service and lead review.");
+  app.innerHTML = `${pageHeader({ eyebrow: "Admin", title: "Service Catalogue & Lead Capture", text: "Review local browser leads, connect to the protected server lead export, and update service price labels for this browser." })}
   <section class="section"><div class="section-inner admin-panel">
     <h2>Manage services and prices</h2>
     <form class="grid three" data-service-admin>${services.map((item) => `<label class="card"><span class="card-body"><strong>${item.title}</strong><span class="muted">${item.category}</span><input name="${item.id}" value="${item.priceLabel}" aria-label="${item.title} price label"></span></label>`).join("")}<button class="primary full">Save service prices</button></form>
-    <h2>Captured leads</h2><div data-admin-leads></div>
-    <div class="actions"><button class="outline" data-export>Export leads as CSV</button></div>
+    <h2>Server leads</h2>
+    <form class="form admin-token-form" data-server-admin>
+      <label>Admin token<input name="adminToken" type="password" autocomplete="current-password"><span class="error"></span></label>
+      <div class="actions"><button class="primary">Load Server Leads</button><button class="outline" type="button" data-server-export>Export Server CSV</button></div>
+      <p class="muted">Set ADMIN_TOKEN in production. The token is not stored in the repository.</p>
+    </form>
+    <div data-server-leads></div>
+    <h2>Browser preview leads</h2><div data-admin-leads></div>
+    <div class="actions"><button class="outline" data-export>Export Browser CSV</button></div>
   </div></section>`;
 }
 
@@ -743,6 +757,37 @@ function bindAdmin() {
     a.href = URL.createObjectURL(blob);
     a.download = "cpmg-leads.csv";
     a.click();
+  });
+  const serverForm = document.querySelector("[data-server-admin]");
+  const serverLeads = document.querySelector("[data-server-leads]");
+  serverForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    serverLeads.innerHTML = `<p class="muted">Loading server leads...</p>`;
+    const token = new FormData(serverForm).get("adminToken");
+    const response = await fetch("/api/admin/leads", { headers: { Authorization: `Bearer ${token}` } }).then((res) => res.json().then((body) => ({ ok: res.ok, ...body }))).catch(() => ({ ok: false, message: "Unable to reach the server admin API." }));
+    if (!response.ok) {
+      serverLeads.innerHTML = errorMessage(response.message || "Unable to load server leads.");
+      return;
+    }
+    const serverRows = Object.entries(response.leads || {}).flatMap(([type, items]) => items.map((item) => ({ type, ...item })));
+    serverLeads.innerHTML = serverRows.length ? `<div class="grid">${serverRows.map((row) => `<div class="card"><div class="card-body"><strong>${row.type}</strong><p class="muted">${row.email || ""} | ${row.emailDeliveryStatus || ""}</p><label>Status<select data-lead-status data-type="${row.type}" data-id="${row.id}">${leadStatuses.map((status) => `<option ${status === (row.status || "new") ? "selected" : ""}>${status}</option>`).join("")}</select><span class="error"></span></label><pre>${escapeHtml(JSON.stringify(row, null, 2))}</pre></div></div>`).join("")}</div>` : `<p class="muted">No server leads found.</p>`;
+    serverLeads.querySelectorAll("[data-lead-status]").forEach((select) => select.addEventListener("change", async () => {
+      const token = new FormData(serverForm).get("adminToken");
+      const result = await fetch("/api/admin/status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ type: select.dataset.type, id: select.dataset.id, status: select.value })
+      }).then((res) => res.json().then((body) => ({ ok: res.ok, ...body }))).catch(() => ({ ok: false, message: "Unable to update status." }));
+      select.closest("label").querySelector(".error").textContent = result.ok ? "" : result.message || "Unable to update status.";
+    }));
+  });
+  document.querySelector("[data-server-export]")?.addEventListener("click", () => {
+    const token = new FormData(serverForm).get("adminToken");
+    if (!token) {
+      serverLeads.innerHTML = errorMessage("Enter the admin token before exporting server leads.");
+      return;
+    }
+    window.location.href = `/api/admin/export?token=${encodeURIComponent(token)}`;
   });
 }
 

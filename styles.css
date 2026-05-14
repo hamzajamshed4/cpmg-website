@@ -167,7 +167,7 @@ p { margin: 0 0 16px; }
   place-items: center;
   font-weight: 900;
 }
-.testimonial { border-left: 4px solid var(--accent); }
+.commitment-card { border-left: 4px solid var(--accent); }
 .form, .wizard, .admin-panel {
   background: var(--white);
   border: 1px solid var(--line);

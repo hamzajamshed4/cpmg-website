@@ -1,5 +1,8 @@
 server-*.log
 data/
+private_uploads/
+.env
+.env.local
 chrome-profile*/
 qa-*.png
 qa-*.cjs
