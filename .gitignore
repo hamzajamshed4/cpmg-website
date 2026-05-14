@@ -1,3 +1,7 @@
 server-*.log
+data/
+chrome-profile*/
+qa-*.png
+qa-*.cjs
 .DS_Store
 Thumbs.db

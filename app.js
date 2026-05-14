@@ -1,20 +1,24 @@
 const contact = {
-  phone: "02039322723",
+  phone: "020 3932 2723",
   phoneHref: "tel:02039322723",
-  email: "Info@cpmanagementgroup.co.uk",
-  careersEmail: "Info@cpmanagementgroup.co.uk",
+  email: "info@cpmanagementgroup.co.uk",
+  careersEmail: "",
   office: "56 Daventry Road, Bristol, England, BS4 1DQ",
-  hours: "Monday to Sunday: 7:00am to 8:00pm"
+  hours: "Monday to Sunday, 7:00am to 8:00pm",
+  serviceArea: "Bristol and surrounding areas",
+  domain: "https://www.cpmanagementgroup.co.uk"
 };
 
-const badges = ["Fully Insured", "DBS Checked", "5-Star Service", "Fast Response", "Same-Day Availability Where Possible", "Satisfaction Guarantee"];
-const benefits = ["Experienced team", "Fully insured", "DBS-checked staff where applicable", "Eco-friendly products where possible", "Transparent pricing", "Fast response", "Domestic and commercial specialists", "Satisfaction-focused service"];
+const badges = ["Insured Service Model", "Fast Response", "Clear Quotes", "Domestic and Commercial", "Bristol and Surrounding Areas", "Professional Support"];
+const benefits = ["Experienced team", "Insured service model", "Appropriate checks where required", "Eco-conscious products where practical", "Clear quote confirmation", "Fast response", "Domestic and commercial specialists", "Professional customer service"];
 const sectors = ["Offices", "Apartment blocks", "Letting agents", "Landlords", "Property managers", "Retail premises", "New-build sites", "Commercial estates"];
-const testimonials = [
-  { name: "Property manager", quote: "CPMG gave us a clear quote, attended when agreed and kept communal areas to a professional standard." },
-  { name: "Domestic customer", quote: "The team were polite, careful and thorough. The end result felt fresh without any fuss." },
-  { name: "Facilities client", quote: "Reliable communication and a practical approach to cleaning, grounds care and urgent property support." }
-];
+const serviceOptions = ["Carpet Cleaning", "End of Tenancy Cleaning", "Deep Cleaning", "Landscaping and Garden", "Office Cleaning", "Communal Area Cleaning", "Fire Alarm Callout", "Waste Removal", "Other"];
+const bookingServiceTitles = serviceOptions.filter((item) => item !== "Other");
+const serviceCommitments = ["Clear enquiry handling", "Quote confirmation before work begins", "Accessible contact routes", "Professional conduct on site"];
+
+function publicServiceName(title) {
+  return title === "Landscaping and Garden Services" ? "Landscaping and Garden" : title;
+}
 
 const serviceImages = {
   domestic: "linear-gradient(135deg, rgba(49,76,99,.82), rgba(66,111,92,.76)), url('https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=70')",
@@ -77,11 +81,11 @@ function service(category, slug, title, shortDescription, priceLabel, image, inc
     includedItems,
     bodyContent,
     seoSections: [
-      `${title} from CPMG is available for domestic and commercial customers where suitable across the UK.`,
+      `${title} from CPMG is available for domestic and commercial customers where suitable in Bristol and surrounding areas.`,
       "Final prices may vary depending on property size, condition, location, access and service requirements. CPMG will confirm the final quote before work begins."
     ],
     galleryImages: [image, category === "domestic" ? serviceImages.garden : serviceImages.commercial, serviceImages.waste],
-    testimonial: testimonials[0],
+    testimonial: null,
     faqs: faqPairs.length ? pairFaqs(faqPairs) : defaultFaqs(title),
     metaTitle: `${title} | CPMG`,
     metaDescription: shortDescription,
@@ -102,7 +106,7 @@ function defaultFaqs(title) {
   return [
     { q: `How is ${title.toLowerCase()} priced?`, a: "Prices are shown as from prices or quote labels. The final quote depends on property size, condition, access, location and requirements." },
     { q: "Can CPMG attend quickly?", a: "Same-day availability may be possible depending on location, team availability and the service required." },
-    { q: "Are staff insured?", a: "CPMG positions its work around professional, insured service delivery, with DBS-checked workers where applicable." }
+    { q: "Are staff insured?", a: "CPMG positions its work around professional, insured service delivery and appropriate checks where required." }
   ];
 }
 
@@ -150,6 +154,15 @@ function render() {
 function setMeta(title, description) {
   document.title = title;
   document.querySelector("meta[name='description']").setAttribute("content", description);
+  document.querySelector("meta[property='og:title']").setAttribute("content", title);
+  document.querySelector("meta[property='og:description']").setAttribute("content", description);
+  let canonical = document.querySelector("link[rel='canonical']");
+  if (!canonical) {
+    canonical = document.createElement("link");
+    canonical.rel = "canonical";
+    document.head.appendChild(canonical);
+  }
+  canonical.href = `${contact.domain}${location.pathname}`;
 }
 
 function hero({ eyebrow, title, text, primary = "Book Now", secondary = "Get a Quote", image = serviceImages.commercial, compact = false }) {
@@ -202,11 +215,11 @@ function trustBadges() {
 }
 
 function homePage() {
-  setMeta("CPMG | Professional Cleaning & Property Maintenance Services Across the UK", "Book domestic cleaning, commercial cleaning, maintenance, grounds care, waste removal and property support services with Crown Property Management Group Ltd.");
+  setMeta("CPMG | Cleaning and Property Management Services", "Professional cleaning, maintenance, grounds care and property support services for homes, landlords, property managers and businesses.");
   app.innerHTML = `${hero({
     eyebrow: "Crown Property Management Group Ltd",
-    title: "Professional Cleaning & Property Maintenance Services Across the UK",
-    text: "CPMG provides reliable domestic and commercial cleaning, maintenance, grounds care, waste removal and property support services for homes, landlords, businesses and property managers.",
+    title: "Cleaning & Property Management Services in Bristol",
+    text: "CPMG provides domestic and commercial cleaning, maintenance, grounds care, waste removal and property support services for homes, landlords, businesses and property managers in Bristol and surrounding areas.",
     primary: "Book a Service",
     secondary: "Get a Quote"
   })}
@@ -220,7 +233,7 @@ function homePage() {
   ${popularServices()}
   ${processSteps()}
   ${whyChoose()}
-  ${testimonialSection()}
+  ${commitmentsSection()}
   ${cta("Ready to Book a Reliable Cleaning or Property Maintenance Service?", "Tell CPMG what you need and the team will confirm availability, pricing and next steps.", "Book Now", "Request a Quote")}`;
 }
 
@@ -242,6 +255,7 @@ function serviceCard(item) {
       <span class="eyebrow">${item.category}</span>
       <h3>${item.title}</h3>
       <p>${item.shortDescription}</p>
+      <ul class="list compact-list">${item.includedItems.slice(0, 4).map((point) => `<li>${point}</li>`).join("")}</ul>
       <span class="service-price">${item.priceLabel}</span>
       <p><a class="button outline" href="/services/${item.category}/${item.slug}" data-link>Learn More</a></p>
     </div>
@@ -255,7 +269,7 @@ function categoryPage(category) {
   app.innerHTML = `${pageHeader({
     eyebrow: isDomestic ? "Domestic services" : "Commercial services",
     title: isDomestic ? "Reliable Domestic Cleaning & Garden Services" : "Commercial Cleaning & Property Maintenance Support",
-    text: isDomestic ? "Book professional carpet cleaning, end of tenancy cleaning, deep cleaning and outdoor property support for homes across the UK." : "Request quotes for cleaning, fire alarm callouts, grounds care, waste removal and property support for businesses and managed sites.",
+    text: isDomestic ? "Book professional carpet cleaning, end of tenancy cleaning, deep cleaning and outdoor property support for homes in Bristol and surrounding areas." : "Request quotes for cleaning, fire alarm callouts, waste removal and property support for businesses and managed sites.",
     primary: isDomestic ? "Book Domestic Service" : "Request a Commercial Quote",
     secondary: "Speak to CPMG"
   })}
@@ -263,9 +277,19 @@ function categoryPage(category) {
     <div class="section-head"><div><span class="eyebrow">${category}</span><h2>${isDomestic ? "Domestic service range" : "Commercial service range"}</h2></div><p>${isDomestic ? "Clear from prices are shown where practical." : "Commercial jobs are priced around site specification, frequency, access and urgency."}</p></div>
     <div class="grid ${isDomestic ? "two" : "three"}">${list.map(serviceCard).join("")}</div>
   </div></section>
+  ${categoryInfoSection(category)}
   ${gallerySection()}
   ${isDomestic ? whyChoose() : sectorSection()}
+  ${faqSection(isDomestic ? domesticFaqs() : commercialFaqs())}
   ${cta(isDomestic ? "Book a Domestic Service With CPMG" : "Request a Commercial Quote", isDomestic ? "Choose your preferred service and send your property details in a few steps." : "Send your site details and CPMG will confirm the right specification and quote.", isDomestic ? "Book This Service" : "Request a Quote", "Contact CPMG")}`;
+}
+
+function categoryInfoSection(category) {
+  const isDomestic = category === "domestic";
+  return `<section class="section alt"><div class="section-inner">
+    <div class="section-head"><div><span class="eyebrow">${isDomestic ? "Domestic support" : "Commercial support"}</span><h2>${isDomestic ? "Cleaning and outdoor help for homes" : "Contract cleaning and property support"}</h2></div></div>
+    <p>${isDomestic ? "CPMG helps domestic customers with one-off cleans, tenancy changes, carpet cleaning and garden support. Every enquiry is reviewed against property size, access, condition and service requirements before the final quote is confirmed." : "CPMG supports landlords, property managers, businesses and commercial clients with cleaning, callout support and waste removal. Commercial work can be quoted as a one-off job or recurring support depending on the site."}</p>
+  </div></section>`;
 }
 
 function servicePage(item) {
@@ -314,6 +338,29 @@ function gallerySection(images = [serviceImages.domestic, serviceImages.commerci
   </div></section>`;
 }
 
+function faqSection(items) {
+  return `<section class="section"><div class="section-inner">
+    <div class="section-head"><div><span class="eyebrow">FAQ</span><h2>Common questions</h2></div></div>
+    <div class="faq">${items.map((faq) => `<details><summary>${faq.q}</summary><p>${faq.a}</p></details>`).join("")}</div>
+  </div></section>`;
+}
+
+function domesticFaqs() {
+  return [
+    { q: "How do domestic prices work?", a: "Prices are from prices until CPMG reviews property size, condition, access and requirements." },
+    { q: "Can I book one-off cleaning?", a: "Yes. One-off deep cleaning, carpet cleaning and tenancy cleans can be requested through the booking page." },
+    { q: "Do you cover garden work?", a: "Yes. Landscaping and garden enquiries can include mowing, hedge trimming, pressure washing and garden waste removal." }
+  ];
+}
+
+function commercialFaqs() {
+  return [
+    { q: "Can CPMG quote recurring commercial work?", a: "Yes. Commercial cleaning and property support can be quoted for one-off or recurring requirements." },
+    { q: "Who can request a commercial quote?", a: "Landlords, property managers, letting agents, offices and commercial clients can submit an enquiry." },
+    { q: "Is waste removal included?", a: "Waste removal can be quoted separately and depends on waste type, access, volume and disposal requirements." }
+  ];
+}
+
 function processSteps() {
   return `<section class="section"><div class="section-inner">
     <div class="section-head"><div><span class="eyebrow">How it works</span><h2>Simple booking flow</h2></div></div>
@@ -339,10 +386,10 @@ function sectorSection() {
   </div></section>${whyChoose()}`;
 }
 
-function testimonialSection() {
+function commitmentsSection() {
   return `<section class="section"><div class="section-inner">
-    <div class="section-head"><div><span class="eyebrow">Testimonials</span><h2>Service-focused feedback</h2></div></div>
-    <div class="grid three">${testimonials.map((item) => `<article class="card testimonial"><div class="card-body"><p>"${item.quote}"</p><strong>${item.name}</strong></div></article>`).join("")}</div>
+    <div class="section-head"><div><span class="eyebrow">Service standards</span><h2>What customers can expect</h2></div><p>No inflated promises: CPMG focuses on clear communication, practical quotes and professional attendance.</p></div>
+    <div class="grid four">${serviceCommitments.map((item) => `<article class="card testimonial"><div class="card-body"><h3>${item}</h3><p class="muted">Built into the enquiry and booking process.</p></div></article>`).join("")}</div>
   </div></section>`;
 }
 
@@ -356,7 +403,7 @@ function bookingPage() {
   <section class="booking-section"><div class="section-inner wizard" data-wizard></div></section>`;
 }
 
-let bookingState = { step: 1, service: "", name: "", email: "", phone: "", address: "", postcode: "", propertyType: "", notes: "", date: "", time: "", urgency: "Flexible", consent: false };
+let bookingState = { step: 1, serviceRequired: "", name: "", email: "", phone: "", address: "", postcode: "", propertyType: "", message: "", preferredDate: "", preferredTime: "", urgency: "Flexible", consent: false, companyWebsite: "" };
 
 function bindWizard() {
   const wizard = document.querySelector("[data-wizard]");
@@ -366,11 +413,28 @@ function bindWizard() {
 
 function renderWizard(wizard) {
   wizard.innerHTML = `${bookingProgress()}${wizardStep()}<p class="muted price-note">Final prices may vary depending on property size, condition, location, access, and service requirements. CPMG will confirm the final quote before work begins.</p>`;
-  wizard.querySelectorAll("[data-service]").forEach((button) => button.addEventListener("click", () => { bookingState.service = button.dataset.service; bookingState.step = 2; renderWizard(wizard); }));
+  wizard.querySelectorAll("[data-service]").forEach((button) => button.addEventListener("click", () => { bookingState.serviceRequired = button.dataset.service; bookingState.step = 2; renderWizard(wizard); }));
   wizard.querySelectorAll("[data-next]").forEach((button) => button.addEventListener("click", () => { saveWizardFields(wizard); if (validateWizard(wizard)) { bookingState.step += 1; renderWizard(wizard); } }));
   wizard.querySelectorAll("[data-back]").forEach((button) => button.addEventListener("click", () => { saveWizardFields(wizard); bookingState.step -= 1; renderWizard(wizard); }));
   const submit = wizard.querySelector("[data-submit-booking]");
-  if (submit) submit.addEventListener("click", () => { saveWizardFields(wizard); if (!bookingState.consent) return alert("Please confirm consent before submitting."); saveLead("bookings", { ...bookingState, status: "new", createdAt: new Date().toISOString(), sourcePage: location.pathname }); wizard.innerHTML = successMessage("Booking request received. CPMG will contact you to confirm availability and the final quote."); });
+  if (submit) submit.addEventListener("click", async () => {
+    saveWizardFields(wizard);
+    const errors = validateBookingState();
+    if (Object.keys(errors).length) {
+      showFormErrors(wizard, errors);
+      return;
+    }
+    submit.disabled = true;
+    const response = await submitLead("/api/booking", { ...bookingState, sourcePage: location.pathname });
+    if (response.ok) {
+      saveLead("bookings", { ...bookingState, status: "new", createdAt: new Date().toISOString(), sourcePage: location.pathname });
+      wizard.innerHTML = successMessage("Booking request received. CPMG will contact you to confirm availability and the final quote.");
+    } else {
+      submit.disabled = false;
+      wizard.insertAdjacentHTML("afterbegin", errorMessage(response.message || "Unable to submit the booking request. Please try again or contact CPMG directly."));
+      if (response.errors) showFormErrors(wizard, response.errors);
+    }
+  });
 }
 
 function bookingProgress() {
@@ -382,15 +446,15 @@ function bookingProgress() {
 }
 
 function wizardStep() {
-  if (bookingState.step === 1) return `<h2>Select a Service</h2><div class="booking-service-grid">${services.map(bookingServiceCard).join("")}</div>`;
-  if (bookingState.step === 2) return `<h2>Property Details</h2><div class="form-grid">${field("name","Full name",true)}${field("email","Email",true,"email")}${field("phone","Phone",true,"tel")}${field("address","Address",true)}${field("postcode","Postcode",true)}${selectField("propertyType","Property type",["House","Flat","Office","Retail premises","Apartment block","Commercial estate","Other"])}${field("notes","Notes",false,"textarea","full")}</div><div class="actions"><button class="outline" data-back>Back</button><button class="primary" data-next>Continue</button></div>`;
-  if (bookingState.step === 3) return `<h2>Date and Time</h2><div class="form-grid">${field("date","Preferred date",true,"date")}${selectField("time","Preferred time slot",["Morning","Afternoon","Evening","Any time"])}${selectField("urgency","Urgency",["Flexible","This week","Same-day if available","Emergency / urgent"])}</div><div class="actions"><button class="outline" data-back>Back</button><button class="primary" data-next>Review</button></div>`;
-  const item = services.find((serviceItem) => serviceItem.id === bookingState.service);
-  return `<h2>Review and Submit</h2><div class="card"><div class="card-body"><p><strong>Service:</strong> ${item?.title || ""}</p><p><strong>Contact:</strong> ${bookingState.name}, ${bookingState.email}, ${bookingState.phone}</p><p><strong>Address:</strong> ${bookingState.address}, ${bookingState.postcode}</p><p><strong>Preferred slot:</strong> ${bookingState.date} / ${bookingState.time} / ${bookingState.urgency}</p><p><strong>Notes:</strong> ${bookingState.notes || "None supplied"}</p></div></div><label class="full"><input type="checkbox" name="consent" ${bookingState.consent ? "checked" : ""}> I consent to CPMG contacting me about this enquiry.</label><div class="actions"><button class="outline" data-back>Back</button><button class="primary" data-submit-booking>Submit Request</button></div>`;
+  if (bookingState.step === 1) return `<h2>Select a Service</h2><div class="booking-service-grid">${services.filter((item) => bookingServiceTitles.includes(publicServiceName(item.title))).map(bookingServiceCard).join("")}</div>`;
+  if (bookingState.step === 2) return `<h2>Property Details</h2><div class="form-grid">${field("name","Full name",true)}${field("email","Email address",true,"email")}${field("phone","Phone number",true,"tel")}${field("address","Address",true)}${field("postcode","Postcode",true)}${selectField("propertyType","Property type",["","House","Flat","Office","Retail premises","Apartment block","Commercial estate","Other"])}${field("message","Job details/message",true,"textarea","full")}</div><div class="actions"><button class="outline" data-back>Back</button><button class="primary" data-next>Continue</button></div>`;
+  if (bookingState.step === 3) return `<h2>Date and Time</h2><div class="form-grid">${field("preferredDate","Preferred date",false,"date")}${selectField("preferredTime","Preferred time",["","Morning","Afternoon","Evening","Any time"])}${selectField("urgency","Urgency",["Flexible","This week","Same-day if available","Emergency / urgent"])}</div><div class="actions"><button class="outline" data-back>Back</button><button class="primary" data-next>Review</button></div>`;
+  return `<h2>Review and Submit</h2><div class="card"><div class="card-body"><p><strong>Service:</strong> ${bookingState.serviceRequired || ""}</p><p><strong>Contact:</strong> ${bookingState.name}, ${bookingState.email}, ${bookingState.phone}</p><p><strong>Address:</strong> ${bookingState.address}, ${bookingState.postcode}</p><p><strong>Preferred slot:</strong> ${bookingState.preferredDate || "Not specified"} / ${bookingState.preferredTime || "Not specified"} / ${bookingState.urgency}</p><p><strong>Job details:</strong> ${bookingState.message || "None supplied"}</p></div></div><label class="full consent-label"><input type="checkbox" name="consent" ${bookingState.consent ? "checked" : ""} required> I consent to CPMG contacting me about this enquiry.</label><span class="error" data-error-for="consent"></span><input type="text" name="companyWebsite" hidden tabindex="-1" autocomplete="off"><div class="actions"><button class="outline" data-back>Back</button><button class="primary" data-submit-booking>Submit Request</button></div>`;
 }
 
 function bookingServiceCard(item) {
-  return `<button class="select-card compact-service ${bookingState.service === item.id ? "selected" : ""}" data-service="${item.id}">
+  const label = publicServiceName(item.title);
+  return `<button class="select-card compact-service ${bookingState.serviceRequired === label ? "selected" : ""}" data-service="${label}">
     <span class="service-icon">${item.title.slice(0, 1)}</span>
     <span class="service-summary">
       <strong>${item.title}</strong>
@@ -407,9 +471,60 @@ function saveWizardFields(scope) {
 }
 
 function validateWizard(scope) {
-  const invalid = [...scope.querySelectorAll("[required]")].find((input) => !input.value.trim());
-  if (invalid) { invalid.focus(); return false; }
+  const errors = {};
+  [...scope.querySelectorAll("[required]")].forEach((input) => {
+    if ((input.type === "checkbox" && !input.checked) || (input.type !== "checkbox" && !input.value.trim())) {
+      errors[input.name] = input.type === "email" ? "A valid email address is required." : "This field is required.";
+    } else if (input.type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value)) {
+      errors[input.name] = "A valid email address is required.";
+    }
+  });
+  showFormErrors(scope, errors);
+  const firstInvalidName = Object.keys(errors)[0];
+  const firstInvalid = firstInvalidName ? scope.querySelector(`[name="${firstInvalidName}"]`) : null;
+  if (firstInvalid) {
+    firstInvalid.focus();
+    return false;
+  }
   return true;
+}
+
+function validateBookingState() {
+  const errors = {};
+  if (!bookingState.serviceRequired) errors.serviceRequired = "Choose a service.";
+  if (!bookingState.name.trim()) errors.name = "Full name is required.";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(bookingState.email)) errors.email = "A valid email address is required.";
+  if (!bookingState.phone.trim()) errors.phone = "Phone number is required.";
+  if (!bookingState.address.trim()) errors.address = "Address is required.";
+  if (!bookingState.postcode.trim()) errors.postcode = "Postcode is required.";
+  if (!bookingState.message.trim()) errors.message = "Job details are required.";
+  if (!bookingState.consent) errors.consent = "Consent is required.";
+  return errors;
+}
+
+function showFormErrors(scope, errors) {
+  scope.querySelectorAll(".error").forEach((node) => {
+    node.textContent = "";
+  });
+  Object.entries(errors).forEach(([name, message]) => {
+    const input = scope.querySelector(`[name="${name}"]`);
+    const target = input?.closest("label")?.querySelector(".error") || scope.querySelector(`[data-error-for="${name}"]`);
+    if (target) target.textContent = message;
+  });
+}
+
+async function submitLead(endpoint, data) {
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+    const body = await response.json().catch(() => ({}));
+    return { ok: response.ok && body.ok !== false, ...body };
+  } catch {
+    return { ok: false, message: "The server could not be reached. Please try again or contact CPMG directly." };
+  }
 }
 
 function field(name, label, required = false, type = "text", klass = "") {
@@ -424,49 +539,51 @@ function selectField(name, label, options) {
 
 function contactPage() {
   setMeta("Contact CPMG | Cleaning & Property Maintenance Enquiries", "Contact Crown Property Management Group Ltd for domestic or commercial cleaning, maintenance and property support enquiries.");
-  app.innerHTML = `${pageHeader({ eyebrow: "Contact", title: "Speak to CPMG Today", text: "Send a general enquiry, quote request or service question and the CPMG team will respond as soon as possible." })}
+  app.innerHTML = `${pageHeader({ eyebrow: "Contact", title: "Contact CPMG", text: "Send a general enquiry, quote request or service question and the CPMG team will respond as soon as possible." })}
   <section class="section"><div class="section-inner split">
     ${contactForm()}
-    <aside class="quote-band"><h2>Contact information</h2><p><strong>Phone:</strong> ${contact.phone}</p><p><strong>Email:</strong> ${contact.email}</p><p><strong>Headquarters:</strong> ${contact.office}</p><p><strong>Coverage:</strong> UK-wide service availability.</p><p><strong>Opening hours:</strong> ${contact.hours}</p></aside>
+    <aside class="quote-band"><h2>Contact information</h2><p><strong>Phone:</strong> <a href="${contact.phoneHref}">${contact.phone}</a></p><p><strong>Email:</strong> <a href="mailto:${contact.email}">${contact.email}</a></p><p><strong>Registered office:</strong> ${contact.office}</p><p><strong>Service area:</strong> ${contact.serviceArea}</p><p><strong>Opening hours:</strong> ${contact.hours}</p></aside>
   </div></section>`;
 }
 
 function contactForm() {
-  return `<form class="form" data-lead-form="enquiries"><h2>General enquiry</h2><div class="form-grid">
+  return `<form class="form" data-lead-form="enquiries" novalidate><h2>General enquiry</h2><div class="form-grid">
     <label>Full name<input name="name" required><span class="error"></span></label>
-    <label>Email<input name="email" type="email" required><span class="error"></span></label>
-    <label>Phone<input name="phone" type="tel"><span class="error"></span></label>
-    <label>Service interested in<select name="serviceInterest">${services.map((item) => `<option>${item.title}</option>`).join("")}<option>Other</option></select></label>
+    <label>Email address<input name="email" type="email" required><span class="error"></span></label>
+    <label>Phone number<input name="phone" type="tel"><span class="error"></span></label>
+    <label>Service interested in<select name="serviceInterest" required>${serviceOptions.map((item) => `<option>${item}</option>`).join("")}</select><span class="error"></span></label>
     <label class="full">Message<textarea name="message" required></textarea><span class="error"></span></label>
+    <label class="full consent-label"><input name="consent" type="checkbox" required> I consent to CPMG contacting me about this enquiry.</label><span class="error" data-error-for="consent"></span>
     <input type="text" name="companyWebsite" hidden tabindex="-1" autocomplete="off">
   </div><button class="primary">Submit Enquiry</button></form>`;
 }
 
 function aboutPage() {
   setMeta("About CPMG | Crown Property Management Group Ltd", "Learn about Crown Property Management Group Ltd, a UK property services company providing domestic and commercial cleaning, maintenance and support.");
-  app.innerHTML = `${pageHeader({ eyebrow: "About CPMG", title: "Professional Property Support for Homes, Landlords and Businesses", text: "Crown Property Management Group Ltd was created to provide reliable, professional and flexible property support services across the UK." })}
-  <section class="section"><div class="section-inner split"><div><h2>Company overview</h2><p>CPMG provides cleaning, maintenance, grounds care, waste removal and related property services across domestic and commercial sectors. The company focuses on insured work, DBS-checked workers where applicable, fast response and clear communication.</p><p>From one-off domestic cleans to recurring commercial property support, CPMG helps customers keep spaces clean, safe and presentable.</p></div><div class="grid two"><div class="mini-kpi"><strong>UK-wide</strong><p>Service coverage focus</p></div><div class="mini-kpi"><strong>Insured</strong><p>Professional delivery model</p></div><div class="mini-kpi"><strong>Domestic + Commercial</strong><p>Flexible property support</p></div><div class="mini-kpi"><strong>5-star focus</strong><p>Satisfaction-led service</p></div></div></div></section>
-  ${gallerySection()}${whyChoose()}${testimonialSection()}${cta("Ready for a Cleaner, Safer Property?", "Book a service or speak to CPMG about your property support requirements.", "Book Now", "Contact CPMG")}`;
+  app.innerHTML = `${pageHeader({ eyebrow: "About CPMG", title: "Professional Property Support for Homes, Landlords and Businesses", text: "Professional cleaning and property maintenance services for homes, landlords, businesses and property managers in Bristol and surrounding areas." })}
+  <section class="section"><div class="section-inner split"><div><h2>Company overview</h2><p>CPMG Crown Property Management Group Ltd provides cleaning, maintenance, grounds care, waste removal and related property services across domestic and commercial sectors.</p><p>Company number: 16933005. Registered office: ${contact.office}. The company works to an insured service model and confirms scope, access and quote details before work begins.</p></div><div class="grid two"><div class="mini-kpi"><strong>Bristol area</strong><p>Service area focus</p></div><div class="mini-kpi"><strong>Insured</strong><p>Professional delivery model</p></div><div class="mini-kpi"><strong>Domestic + Commercial</strong><p>Flexible property support</p></div><div class="mini-kpi"><strong>Clear quotes</strong><p>Pricing confirmed before work begins</p></div></div></div></section>
+  <section class="section alt"><div class="section-inner grid two"><div><h2>Who CPMG helps</h2><ul class="list"><li>Homeowners and tenants</li><li>Landlords and letting agents</li><li>Property managers and facilities teams</li><li>Businesses and commercial premises</li></ul></div><div><h2>Services provided</h2><ul class="list"><li>Domestic cleaning and tenancy cleans</li><li>Commercial and communal area cleaning</li><li>Grounds and garden maintenance</li><li>Waste removal and fire alarm callout support</li></ul></div></div></section>
+  ${gallerySection()}${whyChoose()}${commitmentsSection()}${cta("Ready for a Cleaner, Safer Property?", "Book a service or speak to CPMG about your property support requirements.", "Book Now", "Contact CPMG")}`;
 }
 
 function careersPage() {
   setMeta("Work With CPMG | Careers", "Apply to work with Crown Property Management Group Ltd across cleaning, maintenance, grounds care, waste removal and property support roles.");
   app.innerHTML = `${pageHeader({ eyebrow: "Work With Us", title: "Work With CPMG", text: "Join Crown Property Management Group Ltd and become part of a growing UK property services team." })}
   <section class="section"><div class="section-inner split">
-    <div><h2>Who we are</h2><p>CPMG provides cleaning, maintenance, grounds care, waste removal and property support services across domestic and commercial sectors.</p><h2>Benefits</h2><ul class="list"><li>Training and PPE</li><li>Flexible hours</li><li>Growth opportunities</li><li>Domestic and commercial work</li><li>Supportive team</li><li>UK-wide opportunities</li></ul><p class="muted">With your consent, applications may be stored for up to 12 months for suitable future opportunities.</p></div>
-    <form class="form" data-lead-form="careers"><h2>Application form</h2><div class="form-grid">
+    <div><h2>Who we are</h2><p>CPMG provides cleaning, maintenance, grounds care, waste removal and property support services across domestic and commercial sectors.</p><h2>Benefits</h2><ul class="list"><li>Training and PPE where required</li><li>Flexible hours where available</li><li>Growth opportunities</li><li>Domestic and commercial work</li><li>Supportive team</li><li>Bristol-area opportunities</li></ul><p class="muted">With your consent, applications may be stored for up to 12 months for suitable future opportunities.</p></div>
+    <form class="form" data-lead-form="careers" novalidate><h2>Application form</h2><div class="form-grid">
       <label>Full name<input name="fullName" required><span class="error"></span></label>
       <label>Phone<input name="phone" type="tel" required><span class="error"></span></label>
-      <label>Email<input name="email" type="email" required><span class="error"></span></label>
+      <label>Email address<input name="email" type="email" required><span class="error"></span></label>
       <label>Postcode<input name="postcode" required><span class="error"></span></label>
-      <label class="full">Full address<input name="address" required><span class="error"></span></label>
-      <label>Service/role interested in<select name="roleInterestedIn"><option>Cleaner</option><option>Maintenance worker</option><option>Grounds worker</option><option>Waste removal operative</option><option>Property service staff</option></select></label>
-      <label>Right to work in UK<select name="rightToWork"><option>Yes</option><option>No</option></select></label>
-      <label>Earliest start date<input name="earliestStartDate" type="date"></label>
+      <label class="full">Address<input name="address"><span class="error"></span></label>
+      <label>Role interested in<select name="roleInterestedIn" required><option>Cleaner</option><option>Maintenance worker</option><option>Grounds worker</option><option>Waste removal operative</option><option>Property service staff</option></select><span class="error"></span></label>
+      <label>Right to work in the UK<select name="rightToWork" required><option>Yes</option><option>No</option></select><span class="error"></span></label>
+      <label>Earliest start date<input name="earliestStartDate" type="date"><span class="error"></span></label>
       <label class="full">Days/hours available<input name="availability" required><span class="error"></span></label>
-      <label class="full">Short message<textarea name="message"></textarea></label>
+      <label class="full">Experience<textarea name="experience"></textarea><span class="error"></span></label>
       <label class="full">CV upload<input name="cvFile" type="file" accept=".pdf,.doc,.docx"><span class="error"></span></label>
-      <label class="full"><input name="privacyConsent" type="checkbox" required> I consent to CPMG storing my application for recruitment purposes for up to 12 months.</label>
+      <label class="full consent-label"><input name="privacyConsent" type="checkbox" required> I consent to CPMG storing my application for recruitment purposes for up to 12 months.</label><span class="error" data-error-for="privacyConsent"></span>
       <input type="text" name="companyWebsite" hidden tabindex="-1" autocomplete="off">
     </div><button class="primary">Submit Application</button></form>
   </div></section>`;
@@ -474,8 +591,10 @@ function careersPage() {
 
 function bindForms() {
   document.querySelectorAll("[data-lead-form]").forEach((form) => {
-    form.addEventListener("submit", (event) => {
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
+      form.querySelectorAll(".form-alert").forEach((node) => node.remove());
+      showFormErrors(form, {});
       if (form.companyWebsite?.value) return;
       const file = form.cvFile?.files?.[0];
       if (file && (!/\.(pdf|doc|docx)$/i.test(file.name) || file.size > 5 * 1024 * 1024)) {
@@ -483,6 +602,14 @@ function bindForms() {
         return;
       }
       const data = Object.fromEntries(new FormData(form).entries());
+      data.consent = data.consent === "on";
+      data.privacyConsent = data.privacyConsent === "on";
+      const clientErrors = validateLeadForm(form.dataset.leadForm, data);
+      if (Object.keys(clientErrors).length) {
+        showFormErrors(form, clientErrors);
+        form.insertAdjacentHTML("afterbegin", errorMessage("Please correct the highlighted fields."));
+        return;
+      }
       data.status = "new";
       data.createdAt = new Date().toISOString();
       if (form.dataset.leadForm === "careers") {
@@ -490,12 +617,46 @@ function bindForms() {
         const retention = new Date();
         retention.setMonth(retention.getMonth() + 12);
         data.retentionDeleteAt = retention.toISOString();
-        data.cvFileUrl = file ? file.name : "";
+        data.cvFileName = file ? file.name : "";
+        data.cvFileSize = file ? file.size : 0;
       }
-      saveLead(form.dataset.leadForm, data);
-      form.outerHTML = successMessage(form.dataset.leadForm === "careers" ? "Application received. CPMG will contact you if your experience matches current or future opportunities." : "Enquiry received. CPMG will respond as soon as possible.");
+      const endpoints = { enquiries: "/api/contact", careers: "/api/careers" };
+      const button = form.querySelector("button");
+      button.disabled = true;
+      const response = await submitLead(endpoints[form.dataset.leadForm], data);
+      if (response.ok) {
+        saveLead(form.dataset.leadForm, data);
+        form.outerHTML = successMessage(form.dataset.leadForm === "careers" ? "Application received. CPMG will contact you if your experience matches current or future opportunities." : "Enquiry received. CPMG will respond as soon as possible.");
+      } else {
+        button.disabled = false;
+        form.insertAdjacentHTML("afterbegin", errorMessage(response.message || "Unable to submit the form. Please try again or contact CPMG directly."));
+        if (response.errors) showFormErrors(form, response.errors);
+      }
     });
   });
+}
+
+function validateLeadForm(type, data) {
+  const errors = {};
+  const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (type === "enquiries") {
+    if (!String(data.name || "").trim()) errors.name = "Full name is required.";
+    if (!validEmail.test(data.email || "")) errors.email = "A valid email address is required.";
+    if (!serviceOptions.includes(data.serviceInterest)) errors.serviceInterest = "Choose a valid service.";
+    if (!String(data.message || "").trim()) errors.message = "Message is required.";
+    if (data.consent !== true) errors.consent = "Consent is required.";
+  }
+  if (type === "careers") {
+    if (!String(data.fullName || "").trim()) errors.fullName = "Full name is required.";
+    if (!validEmail.test(data.email || "")) errors.email = "A valid email address is required.";
+    if (!String(data.phone || "").trim()) errors.phone = "Phone number is required.";
+    if (!String(data.postcode || "").trim()) errors.postcode = "Postcode is required.";
+    if (!String(data.roleInterestedIn || "").trim()) errors.roleInterestedIn = "Role is required.";
+    if (!["Yes", "No"].includes(data.rightToWork)) errors.rightToWork = "Right to work answer is required.";
+    if (!String(data.availability || "").trim()) errors.availability = "Availability is required.";
+    if (data.privacyConsent !== true) errors.privacyConsent = "Consent is required.";
+  }
+  return errors;
 }
 
 function saveLead(key, data) {
@@ -505,7 +666,11 @@ function saveLead(key, data) {
 }
 
 function successMessage(text) {
-  return `<div class="success" role="status">${text}</div>`;
+  return `<div class="success form-alert" role="status">${text}</div>`;
+}
+
+function errorMessage(text) {
+  return `<div class="error-box form-alert" role="alert">${text}</div>`;
 }
 
 function privacyPage() {
@@ -600,11 +765,11 @@ function notFoundPage() {
 function injectSchema(path, item) {
   document.querySelectorAll("[data-schema]").forEach((node) => node.remove());
   const schema = [
-    { "@context": "https://schema.org", "@type": "Organization", name: "Crown Property Management Group Ltd", alternateName: "CPMG", url: "https://cpmg.co.uk", email: contact.email, address: contact.office },
-    { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: path.split("/").filter(Boolean).map((part, index, array) => ({ "@type": "ListItem", position: index + 1, name: part.replaceAll("-", " "), item: `https://cpmg.co.uk/${array.slice(0, index + 1).join("/")}` })) }
+    { "@context": "https://schema.org", "@type": "Organization", name: "Crown Property Management Group Ltd", alternateName: "CPMG", url: contact.domain, email: contact.email, telephone: contact.phone, address: contact.office },
+    { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: path.split("/").filter(Boolean).map((part, index, array) => ({ "@type": "ListItem", position: index + 1, name: part.replaceAll("-", " "), item: `${contact.domain}/${array.slice(0, index + 1).join("/")}` })) }
   ];
   if (item) {
-    schema.push({ "@context": "https://schema.org", "@type": "Service", name: item.title, description: item.metaDescription, provider: { "@type": "Organization", name: "CPMG" }, areaServed: "United Kingdom" });
+    schema.push({ "@context": "https://schema.org", "@type": "Service", name: item.title, description: item.metaDescription, provider: { "@type": "Organization", name: "CPMG" }, areaServed: contact.serviceArea });
     schema.push({ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: item.faqs.map((faq) => ({ "@type": "Question", name: faq.q, acceptedAnswer: { "@type": "Answer", text: faq.a } })) });
   }
   schema.forEach((entry) => {
