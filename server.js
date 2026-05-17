@@ -38,6 +38,30 @@ const services = [
   "Other"
 ];
 
+const publicRoutes = new Set([
+  "/",
+  "/services/domestic",
+  "/services/commercial",
+  "/about",
+  "/careers",
+  "/contact",
+  "/booking",
+  "/privacy-policy",
+  "/terms-and-conditions",
+  "/admin",
+  "/services/domestic/carpet-cleaning",
+  "/services/domestic/end-of-tenancy-cleaning",
+  "/services/domestic/deep-cleaning",
+  "/services/domestic/landscaping-and-garden",
+  "/services/commercial/office-cleaning",
+  "/services/commercial/communal-area-cleaning",
+  "/services/commercial/window-cleaning",
+  "/services/commercial/fire-alarm-callout",
+  "/services/commercial/ground-maintenance",
+  "/services/commercial/waste-removal",
+  "/services/commercial/sparkle-cleaning"
+]);
+
 const statusValues = ["new", "contacted", "quoted", "booked", "completed", "cancelled"];
 const cvTypes = {
   ".pdf": ["application/pdf"],
@@ -60,8 +84,18 @@ function loadEnv(filePath) {
 }
 
 function sendJson(res, status, body) {
-  res.writeHead(status, { "Content-Type": "application/json; charset=utf-8" });
+  res.writeHead(status, { ...securityHeaders(), "Content-Type": "application/json; charset=utf-8" });
   res.end(JSON.stringify(body));
+}
+
+function securityHeaders(extra = {}) {
+  return {
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "X-Frame-Options": "SAMEORIGIN",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=()",
+    ...extra
+  };
 }
 
 function readBody(req, limit = 8 * 1024 * 1024) {
@@ -604,7 +638,9 @@ async function handleApi(req, res, type) {
     await storeLead(type, record);
     sendJson(res, 200, { ok: true, id: record.id, emailDeliveryStatus: record.emailDeliveryStatus, message: "Thank you. Your enquiry has been received." });
   } catch (error) {
-    sendJson(res, 500, { ok: false, message: error.message || "Unable to submit the form right now." });
+    const badRequestMessages = ["Invalid JSON", "Missing multipart boundary", "Request body too large"];
+    const status = badRequestMessages.includes(error.message) ? 400 : 500;
+    sendJson(res, status, { ok: false, message: status === 400 ? error.message : "Unable to submit the form right now." });
   }
 }
 
@@ -684,8 +720,92 @@ function csvCell(value) {
   return `"${String(value).replaceAll('"', '""')}"`;
 }
 
+function trackingHead() {
+  const gtmId = cleanTrackingId(process.env.GTM_CONTAINER_ID, /^GTM-[A-Z0-9]+$/i);
+  const gaId = gtmId ? "" : cleanTrackingId(process.env.GA_MEASUREMENT_ID, /^G-[A-Z0-9]+$/i);
+  const config = { gtmId, gaId, consentRequired: process.env.COOKIE_CONSENT_REQUIRED !== "false" };
+  const configScript = `<script>window.__CPMG_SITE_URL__=${JSON.stringify(siteUrl.replace(/\/$/, ""))};window.__CPMG_TRACKING_CONFIG__=${JSON.stringify(config)};</script>`;
+  const consentDefault = gtmId || gaId
+    ? `<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{ad_storage:'denied',analytics_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});</script>`
+    : "";
+  if (gtmId) {
+    return `${configScript}${consentDefault}<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${gtmId}');</script>`;
+  }
+  if (gaId) {
+    return `${configScript}${consentDefault}`;
+  }
+  return configScript;
+}
+
+function trackingBody() {
+  const gtmId = cleanTrackingId(process.env.GTM_CONTAINER_ID, /^GTM-[A-Z0-9]+$/i);
+  if (!gtmId) return "";
+  return `<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=${gtmId}" height="0" width="0" style="display:none;visibility:hidden" title="Google Tag Manager"></iframe></noscript>`;
+}
+
+function cleanTrackingId(value, pattern) {
+  const candidate = String(value || "").trim();
+  return pattern.test(candidate) ? candidate : "";
+}
+
+function metaForPath(routePath) {
+  const map = {
+    "/": ["Crown Property Management Group Ltd | Cleaning and Property Support", "Professional cleaning, property maintenance, grounds care and waste removal services for homes, landlords, businesses and property managers in Bristol and surrounding areas."],
+    "/services/domestic": ["Domestic Cleaning Services | Crown Property Management Group Ltd", "Professional carpet cleaning, end of tenancy cleaning services, deep cleaning services for homes, landscaping and garden maintenance."],
+    "/services/commercial": ["Commercial Cleaning and Property Support | Crown Property Management Group Ltd", "Commercial office cleaning, communal area cleaning, ground maintenance, waste removal and property support services for businesses and property managers."],
+    "/about": ["About Crown Property Management Group Ltd", "Learn about Crown Property Management Group Ltd and its cleaning, property maintenance, grounds care and waste removal services in Bristol and surrounding areas."],
+    "/careers": ["Careers | Crown Property Management Group Ltd", "Apply to work with Crown Property Management Group Ltd across cleaning, maintenance, grounds care, waste removal and property support roles."],
+    "/contact": ["Contact Crown Property Management Group Ltd", "Contact Crown Property Management Group Ltd to enquire about cleaning, property maintenance, grounds care and waste removal services."],
+    "/booking": ["Book a Service | Crown Property Management Group Ltd", "Request a cleaning, maintenance, grounds care or property support service from Crown Property Management Group Ltd."],
+    "/privacy-policy": ["Privacy Policy | Crown Property Management Group Ltd", "Privacy policy for Crown Property Management Group Ltd covering UK GDPR, enquiry data, booking data, careers applications, cookies and analytics."],
+    "/terms-and-conditions": ["Terms and Conditions | Crown Property Management Group Ltd", "Terms and conditions for Crown Property Management Group Ltd cleaning, maintenance and property support services."],
+    "/services/domestic/carpet-cleaning": ["Carpet Cleaning | Crown Property Management Group Ltd", "Professional carpet cleaning using hot-water extraction, steam cleaning, stain treatment and child and pet-safe products."],
+    "/services/domestic/end-of-tenancy-cleaning": ["End of Tenancy Cleaning | Crown Property Management Group Ltd", "End of tenancy cleaning services for tenants, landlords, estate agents and property managers to landlord and letting agent standards."],
+    "/services/domestic/deep-cleaning": ["Deep Cleaning | Crown Property Management Group Ltd", "Deep cleaning services for homes that need a full refresh, including hard-to-reach areas and built-up grime."],
+    "/services/domestic/landscaping-and-garden": ["Landscaping and Garden Services | Crown Property Management Group Ltd", "Landscaping and garden maintenance including lawn mowing, hedge trimming, patio cleaning and garden waste removal."],
+    "/services/commercial/office-cleaning": ["Office Cleaning | Crown Property Management Group Ltd", "Commercial office cleaning for desks, workstations, kitchens, bathrooms and high-touch surfaces."],
+    "/services/commercial/communal-area-cleaning": ["Communal Area Cleaning | Crown Property Management Group Ltd", "Scheduled cleaning for hallways, stairwells, lobbies, communal kitchens and bin stores."],
+    "/services/commercial/window-cleaning": ["Window Cleaning | Crown Property Management Group Ltd", "Interior and exterior commercial window cleaning using purified water and water-fed pole systems where suitable."],
+    "/services/commercial/fire-alarm-callout": ["Fire Alarm Callout | Crown Property Management Group Ltd", "Fire alarm callout support for commercial property safety, testing, inspection and fault diagnosis."],
+    "/services/commercial/ground-maintenance": ["Ground Maintenance | Crown Property Management Group Ltd", "Commercial estate grounds care, lawn care, hedge maintenance, litter picking, gritting and seasonal support."],
+    "/services/commercial/waste-removal": ["Waste Removal | Crown Property Management Group Ltd", "Responsible household and commercial waste removal with same-day or next-day slots where possible."],
+    "/services/commercial/sparkle-cleaning": ["Sparkle Cleaning | Crown Property Management Group Ltd", "Show-home standard cleaning for new builds, sales suites, viewings and post-construction handover."]
+  };
+  const [title, description] = map[routePath] || map["/"];
+  return { title, description, canonical: `${siteUrl.replace(/\/$/, "")}${routePath === "/" ? "/" : routePath}` };
+}
+
+function renderIndexHtml(routePath = "/") {
+  const meta = metaForPath(routePath);
+  const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
+  return html
+    .replaceAll("https://www.cpmanagementgroup.co.uk", siteUrl.replace(/\/$/, ""))
+    .replace(/<title>.*?<\/title>/, `<title>${escapeHtml(meta.title)}</title>`)
+    .replace(/<meta name="description" content="[^"]*" \/>/, `<meta name="description" content="${escapeHtml(meta.description)}" />`)
+    .replace(/<link rel="canonical" href="[^"]*" \/>/, `<link rel="canonical" href="${meta.canonical}" />`)
+    .replace(/<meta property="og:title" content="[^"]*" \/>/, `<meta property="og:title" content="${escapeHtml(meta.title)}" />`)
+    .replace(/<meta property="og:description" content="[^"]*" \/>/, `<meta property="og:description" content="${escapeHtml(meta.description)}" />`)
+    .replace(/<meta property="og:url" content="[^"]*" \/>/, `<meta property="og:url" content="${meta.canonical}" />`)
+    .replace("<!-- CPMG_TRACKING_HEAD -->", trackingHead())
+    .replace("<!-- CPMG_TRACKING_BODY -->", trackingBody());
+}
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[char]));
+}
+
+function sendHtml(res, status, html, extraHeaders = {}) {
+  res.writeHead(status, securityHeaders({ "Content-Type": "text/html; charset=utf-8", ...extraHeaders }));
+  res.end(html);
+}
+
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, "http://localhost");
+  if (url.pathname.length > 1 && url.pathname.endsWith("/")) {
+    res.writeHead(301, securityHeaders({ Location: url.pathname.replace(/\/+$/, "") + url.search }));
+    res.end();
+    return;
+  }
   if (req.method === "POST" && url.pathname === "/api/contact") return handleApi(req, res, "contact");
   if (req.method === "POST" && url.pathname === "/api/booking") return handleApi(req, res, "booking");
   if (req.method === "POST" && url.pathname === "/api/careers") return handleApi(req, res, "careers");
@@ -701,7 +821,22 @@ const server = http.createServer((req, res) => {
     res.end("Forbidden");
     return;
   }
-  if (url.pathname === "/" || !path.extname(filePath)) filePath = path.join(root, "index.html");
+  if (url.pathname === "/" || !path.extname(filePath)) {
+    if (publicRoutes.has(url.pathname)) {
+      const noIndex = url.pathname === "/admin" ? { "X-Robots-Tag": "noindex, nofollow" } : {};
+      sendHtml(res, 200, renderIndexHtml(url.pathname), noIndex);
+      return;
+    }
+    fs.readFile(path.join(root, "404.html"), "utf8", (notFoundErr, notFound) => {
+      if (notFoundErr) {
+        res.writeHead(404, securityHeaders({ "Content-Type": "text/plain; charset=utf-8" }));
+        res.end("Not found");
+        return;
+      }
+      sendHtml(res, 404, notFound);
+    });
+    return;
+  }
   const relative = path.relative(root, filePath);
   const firstSegment = relative.split(path.sep)[0];
   if (relative.startsWith("..") || path.isAbsolute(relative) || [".git", "data", "private_uploads"].includes(firstSegment) || [".env", ".env.local"].includes(path.basename(filePath))) {
@@ -711,18 +846,18 @@ const server = http.createServer((req, res) => {
   }
   fs.readFile(filePath, (err, data) => {
     if (err) {
-      fs.readFile(path.join(root, "index.html"), (fallbackErr, fallback) => {
+      fs.readFile(path.join(root, "404.html"), (fallbackErr, fallback) => {
         if (fallbackErr) {
-          res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+          res.writeHead(404, securityHeaders({ "Content-Type": "text/plain; charset=utf-8" }));
           res.end("Not found");
           return;
         }
-        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+        res.writeHead(404, securityHeaders({ "Content-Type": "text/html; charset=utf-8" }));
         res.end(fallback);
       });
       return;
     }
-    res.writeHead(200, { "Content-Type": types[path.extname(filePath)] || "application/octet-stream" });
+    res.writeHead(200, securityHeaders({ "Content-Type": types[path.extname(filePath)] || "application/octet-stream" }));
     res.end(data);
   });
 });

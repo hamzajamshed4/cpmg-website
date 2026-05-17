@@ -53,3 +53,19 @@ The `/admin` page can load server leads, export CSV, and update lead status when
 ## Required environment
 
 Copy `.env.example` to `.env` locally, or set the same variables in the production host. Never commit real secrets.
+
+## Tracking and analytics
+
+Set `GTM_CONTAINER_ID` to enable Google Tag Manager. Set `GA_MEASUREMENT_ID` only if direct GA4 is required without GTM. When both are configured, GTM is used and the direct GA4 script is skipped to avoid duplicate page tracking.
+
+Analytics consent starts denied through Google consent mode. The front end shows a cookie notice when GTM or GA4 is configured, and visitors can accept or decline analytics cookies. Final production cookie wording and consent settings should be legally reviewed.
+
+## SEO and local search launch tasks
+
+The codebase includes canonical URLs, sitemap.xml, robots.txt, page metadata and LocalBusiness-style structured data using the verified company details already present on the site. Google local map pack visibility still requires work outside the codebase:
+
+- Set up or verify Google Business Profile.
+- Set up Google Search Console.
+- Submit `https://www.cpmanagementgroup.co.uk/sitemap.xml`.
+- Build genuine local citations and backlinks.
+- Collect real reviews only from real customers.
