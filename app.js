@@ -452,7 +452,7 @@ function renderWizard(wizard) {
       wizard.innerHTML = successMessage("Booking request received. CPMG will contact you to confirm availability and the final quote.");
     } else {
       submit.disabled = false;
-      wizard.insertAdjacentHTML("afterbegin", errorMessage(response.message || "Unable to submit the booking request. Please try again or contact CPMG directly."));
+      wizard.insertAdjacentHTML("afterbegin", errorMessage(response.message || "Unable to submit the booking request. Please use the direct email or phone option below.", bookingFallbackMessage(bookingState)));
       if (response.errors) showFormErrors(wizard, response.errors);
     }
   });
@@ -657,7 +657,7 @@ function bindForms() {
         form.outerHTML = successMessage(form.dataset.leadForm === "careers" ? "Application received. CPMG will contact you if your experience matches current or future opportunities." : "Enquiry received. CPMG will respond as soon as possible.");
       } else {
         button.disabled = false;
-        form.insertAdjacentHTML("afterbegin", errorMessage(response.message || "Unable to submit the form. Please try again or contact CPMG directly."));
+        form.insertAdjacentHTML("afterbegin", errorMessage(response.message || "Unable to submit the form. Please use the direct email or phone option below.", leadFallbackMessage(form.dataset.leadForm, data)));
         if (response.errors) showFormErrors(form, response.errors);
       }
     });
@@ -697,8 +697,71 @@ function successMessage(text) {
   return `<div class="success form-alert" role="status">${text}</div>`;
 }
 
-function errorMessage(text) {
-  return `<div class="error-box form-alert" role="alert">${text}</div>`;
+function errorMessage(text, fallback = "") {
+  return `<div class="error-box form-alert" role="alert"><p>${text}</p>${fallback}</div>`;
+}
+
+function bookingFallbackMessage(data) {
+  const subject = `Booking request - ${data.serviceRequired || "CPMG service"}`;
+  const body = [
+    "Hello CPMG,",
+    "",
+    "I tried to submit a booking request online. Please contact me about the details below.",
+    "",
+    `Service: ${data.serviceRequired || ""}`,
+    `Name: ${data.name || ""}`,
+    `Email: ${data.email || ""}`,
+    `Phone: ${data.phone || ""}`,
+    `Address: ${data.address || ""}`,
+    `Postcode: ${data.postcode || ""}`,
+    `Preferred date: ${data.preferredDate || "Not specified"}`,
+    `Preferred time: ${data.preferredTime || "Not specified"}`,
+    `Urgency: ${data.urgency || "Not specified"}`,
+    `Property type: ${data.propertyType || "Not specified"}`,
+    `Job details: ${data.message || ""}`,
+    "",
+    "Thank you."
+  ].join("\n");
+  return fallbackActions(subject, body);
+}
+
+function leadFallbackMessage(type, data) {
+  const isCareers = type === "careers";
+  const subject = isCareers ? `Careers application - ${data.roleInterestedIn || "CPMG role"}` : `Contact enquiry - ${data.serviceInterest || "CPMG service"}`;
+  const body = isCareers ? [
+    "Hello CPMG,",
+    "",
+    "I tried to submit a careers application online. Please contact me about the details below.",
+    "",
+    `Name: ${data.fullName || ""}`,
+    `Email: ${data.email || ""}`,
+    `Phone: ${data.phone || ""}`,
+    `Postcode: ${data.postcode || ""}`,
+    `Role: ${data.roleInterestedIn || ""}`,
+    `Right to work in the UK: ${data.rightToWork || ""}`,
+    `Availability: ${data.availability || ""}`,
+    `Experience: ${data.experience || ""}`,
+    "",
+    "Thank you."
+  ].join("\n") : [
+    "Hello CPMG,",
+    "",
+    "I tried to submit an enquiry online. Please contact me about the details below.",
+    "",
+    `Name: ${data.name || ""}`,
+    `Email: ${data.email || ""}`,
+    `Phone: ${data.phone || ""}`,
+    `Service: ${data.serviceInterest || ""}`,
+    `Message: ${data.message || ""}`,
+    "",
+    "Thank you."
+  ].join("\n");
+  return fallbackActions(subject, body);
+}
+
+function fallbackActions(subject, body) {
+  const mailto = `mailto:${contact.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  return `<div class="fallback-actions"><a class="primary" href="${mailto}">Email CPMG Directly</a><a class="outline" href="${contact.phoneHref}">Call ${contact.phone}</a></div><p class="small-note">The registered inbox is ${contact.email}. The online form also needs the production API/email service configured on the website host.</p>`;
 }
 
 function bindCookieNotice() {
