@@ -452,7 +452,7 @@ function renderWizard(wizard) {
       wizard.innerHTML = successMessage("Booking request received. CPMG will contact you to confirm availability and the final quote.");
     } else {
       submit.disabled = false;
-      wizard.insertAdjacentHTML("afterbegin", errorMessage(response.message || "Unable to submit the booking request. Please use the direct email or phone option below.", bookingFallbackMessage(bookingState)));
+      wizard.insertAdjacentHTML("afterbegin", fallbackMessage("Your booking details are ready to send", "The online booking connection is being configured. Please send the details directly to the registered CPMG inbox below.", bookingFallbackMessage(bookingState)));
       if (response.errors) showFormErrors(wizard, response.errors);
     }
   });
@@ -657,7 +657,7 @@ function bindForms() {
         form.outerHTML = successMessage(form.dataset.leadForm === "careers" ? "Application received. CPMG will contact you if your experience matches current or future opportunities." : "Enquiry received. CPMG will respond as soon as possible.");
       } else {
         button.disabled = false;
-        form.insertAdjacentHTML("afterbegin", errorMessage(response.message || "Unable to submit the form. Please use the direct email or phone option below.", leadFallbackMessage(form.dataset.leadForm, data)));
+        form.insertAdjacentHTML("afterbegin", fallbackMessage("Your details are ready to send", "The online form connection is being configured. Please send the details directly to the registered CPMG inbox below.", leadFallbackMessage(form.dataset.leadForm, data)));
         if (response.errors) showFormErrors(form, response.errors);
       }
     });
@@ -699,6 +699,10 @@ function successMessage(text) {
 
 function errorMessage(text, fallback = "") {
   return `<div class="error-box form-alert" role="alert"><p>${text}</p>${fallback}</div>`;
+}
+
+function fallbackMessage(title, text, fallback = "") {
+  return `<div class="fallback-box form-alert" role="status"><strong>${title}</strong><p>${text}</p>${fallback}</div>`;
 }
 
 function bookingFallbackMessage(data) {
