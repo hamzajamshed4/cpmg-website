@@ -1,6 +1,6 @@
 const contact = {
-  phone: "020 3932 2723",
-  phoneHref: "tel:02039322723",
+  phone: "0117 287 0518",
+  phoneHref: "tel:01172870518",
   email: "info@cpmanagementgroup.co.uk",
   careersEmail: "",
   office: "56 Daventry Road, Bristol, England, BS4 1DQ",

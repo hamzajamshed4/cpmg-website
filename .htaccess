@@ -1,0 +1,37 @@
+# CPMG static + PHP hosting rules for cPanel (Apache / LiteSpeed)
+# Fixes two things:
+#   1. Deep links (e.g. /services/domestic/carpet-cleaning) no longer 500.
+#      Any URL that is not a real file is served index.html so the app can route it.
+#   2. Form submissions reach the PHP mailers instead of a dead /api endpoint.
+
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # --- Form endpoints -> PHP handlers ---
+  # The front end posts to /api/booking, /api/contact, /api/careers.
+  RewriteRule ^api/booking/?$   api/booking.php  [L]
+  RewriteRule ^api/contact/?$   api/contact.php  [L]
+  RewriteRule ^api/careers/?$   api/careers.php  [L]
+
+  # --- Single-page-app fallback ---
+  # Serve real files and directories as-is (styles.css, app.js, images, etc).
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Everything else renders the app shell.
+  RewriteRule ^ index.html [L]
+</IfModule>
+
+# Block direct access to the shared PHP include.
+<Files "_lib.php">
+  Require all denied
+</Files>
+
+# Optional: force HTTPS. Uncomment if your host does not already redirect.
+# <IfModule mod_rewrite.c>
+#   RewriteCond %{HTTPS} off
+#   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# </IfModule>
