@@ -18,6 +18,7 @@ Upload these into your `public_html` folder (keep the `api` folder as a folder):
     favicon-16.png
     favicon-32.png
     apple-touch-icon.png
+    images/
     sitemap.xml
     robots.txt
     404.html

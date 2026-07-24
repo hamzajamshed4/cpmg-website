@@ -12,8 +12,15 @@ const contact = {
   domain: window.__CPMG_SITE_URL__ || "https://www.cpmanagementgroup.co.uk"
 };
 
-const badges = ["Insured Service Model", "Fast Response", "Clear Quotes", "Domestic and Commercial", "Bristol and Surrounding Areas", "Professional Support"];
-const benefits = ["Experienced team", "Insured service model", "Appropriate checks where required", "Eco-conscious products where practical", "Clear quote confirmation", "Fast response", "Domestic and commercial specialists", "Professional customer service"];
+const badges = ["Insured service model", "Fast response", "Clear quotes", "Domestic & commercial", "Bristol & surrounding areas", "Professional support"];
+const benefits = [
+  { title: "Experienced team", text: "Trained operatives with practical property experience across homes and commercial sites." },
+  { title: "Insured delivery", text: "Work is planned and delivered under a professional insured service model." },
+  { title: "Clear pricing", text: "Scope and quote details are confirmed before attendance, with no surprise extras." },
+  { title: "Fast response", text: "Enquiries are reviewed quickly, with same-day options where team capacity allows." },
+  { title: "Eco-conscious where practical", text: "Safer product choices for homes, tenants and busy workplaces when suitable." },
+  { title: "One property team", text: "Cleaning, grounds, waste and callout support handled through one Bristol-based company." }
+];
 const sectors = ["Offices", "Apartment blocks", "Letting agents", "Landlords", "Property managers", "Retail premises", "New-build sites", "Commercial estates"];
 const serviceOptions = [
   "Carpet Cleaning",
@@ -33,24 +40,48 @@ const bookingServiceTitles = serviceOptions.filter((item) => item !== "Other");
 const serviceCommitments = ["Clear enquiry handling", "Quote confirmation before work begins", "Accessible contact routes", "Professional conduct on site"];
 const leadStatuses = ["new", "contacted", "quoted", "booked", "completed", "cancelled"];
 const trackingConfig = window.__CPMG_TRACKING_CONFIG__ || {};
+const featuredServiceSlugs = ["carpet-cleaning", "end-of-tenancy-cleaning", "deep-cleaning", "office-cleaning", "window-cleaning", "communal-area-cleaning", "ground-maintenance", "waste-removal"];
 
 function publicServiceName(title) {
   return title === "Landscaping and Garden Services" ? "Landscaping and Garden" : title;
 }
 
+function photoLayer(path, overlay) {
+  return `${overlay}, url('${path}')`;
+}
+
+const photos = {
+  hero: "/images/hero-property.jpg",
+  domestic: "/images/domestic-clean.jpg",
+  commercial: "/images/commercial-office.jpg",
+  garden: "/images/grounds.jpg",
+  waste: "/images/waste.jpg",
+  windows: "/images/windows.jpg",
+  carpet: "/images/carpet.jpg",
+  kitchen: "/images/kitchen-clean.jpg",
+  hallway: "/images/hallway.jpg",
+  sparkle: "/images/sparkle.jpg"
+};
+
 const serviceImages = {
-  domestic: "linear-gradient(135deg, rgba(49,76,99,.82), rgba(66,111,92,.76)), url('https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=70')",
-  commercial: "linear-gradient(135deg, rgba(24,39,54,.84), rgba(93,127,155,.72)), url('https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=70')",
-  garden: "linear-gradient(135deg, rgba(66,111,92,.84), rgba(160,137,80,.66)), url('https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=1200&q=70')",
-  waste: "linear-gradient(135deg, rgba(49,76,99,.84), rgba(92,97,101,.72)), url('https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=1200&q=70')"
+  domestic: photoLayer(photos.domestic, "linear-gradient(135deg, rgba(49,76,99,.78), rgba(66,111,92,.7))"),
+  commercial: photoLayer(photos.commercial, "linear-gradient(135deg, rgba(24,39,54,.82), rgba(93,127,155,.68))"),
+  garden: photoLayer(photos.garden, "linear-gradient(135deg, rgba(66,111,92,.78), rgba(160,137,80,.62))"),
+  waste: photoLayer(photos.waste, "linear-gradient(135deg, rgba(49,76,99,.8), rgba(92,97,101,.7))"),
+  windows: photoLayer(photos.windows, "linear-gradient(135deg, rgba(24,39,54,.78), rgba(93,127,155,.62))"),
+  carpet: photoLayer(photos.carpet, "linear-gradient(135deg, rgba(49,76,99,.78), rgba(66,111,92,.66))"),
+  kitchen: photoLayer(photos.kitchen, "linear-gradient(135deg, rgba(49,76,99,.76), rgba(66,111,92,.64))"),
+  hallway: photoLayer(photos.hallway, "linear-gradient(135deg, rgba(24,39,54,.8), rgba(93,127,155,.64))"),
+  sparkle: photoLayer(photos.sparkle, "linear-gradient(135deg, rgba(24,39,54,.76), rgba(93,127,155,.58))"),
+  hero: photoLayer(photos.hero, "linear-gradient(105deg, rgba(18,28,38,.88), rgba(47,72,93,.62) 55%, rgba(47,72,93,.38))")
 };
 
 const services = [
-  service("domestic", "carpet-cleaning", "Carpet Cleaning", "Professional carpet cleaning using hot-water extraction, steam cleaning, stain treatment and child and pet-safe products.", "From £79", serviceImages.domestic,
+  service("domestic", "carpet-cleaning", "Carpet Cleaning", "Professional carpet cleaning using hot-water extraction, steam cleaning, stain treatment and child and pet-safe products.", "From £79", serviceImages.carpet,
     ["Hot-water extraction and steam cleaning", "Stain removal and odour removal", "Allergen, pet odour and everyday soil treatment", "Fast drying methods for common carpet types", "Child and pet-safe products where possible"],
     ["CPMG provides professional carpet cleaning for busy homes, rented properties and managed housing where carpets need a reliable refresh. Hot-water extraction and steam cleaning methods lift dirt, odours, allergens and stains from suitable carpet types.", "Before work begins, CPMG discusses carpet condition, access, room numbers, pet odours, stains and drying expectations so the final price is clear."],
     ["Do you treat pet odours?", "Yes. We can apply odour treatment where suitable and will advise if permanent contamination is likely.", "How fast do carpets dry?", "Drying times vary by carpet type, ventilation and weather, but we use fast drying processes where possible."]),
-  service("domestic", "end-of-tenancy-cleaning", "End of Tenancy Cleaning", "End of tenancy cleaning services for tenants, landlords, estate agents and property managers to landlord and letting agent standards.", "From £149", serviceImages.domestic,
+  service("domestic", "end-of-tenancy-cleaning", "End of Tenancy Cleaning", "End of tenancy cleaning services for tenants, landlords, estate agents and property managers to landlord and letting agent standards.", "From £149", serviceImages.kitchen,
     ["Full property deep clean", "Deposit-back style cleaning", "Kitchen appliances and oven cleaning", "Bathroom sanitising and limescale removal", "Internal cupboards, fixtures and floors", "48-hour re-clean claim window where applicable"],
     ["CPMG end of tenancy cleaning services support tenants, landlords and letting agents who need a property presented to a professional standard. The service covers built-up use across kitchens, bathrooms, appliances, fixtures, internal cupboards and floors.", "Where applicable, re-clean requests must be reported within 48 hours of completion so the issue can be reviewed promptly against the agreed specification."]),
   service("domestic", "deep-cleaning", "Deep Cleaning", "Deep cleaning services for homes that need a full refresh, including hard-to-reach areas and built-up grime.", "From £99", serviceImages.domestic,
@@ -59,27 +90,27 @@ const services = [
   service("domestic", "landscaping-and-garden", "Landscaping and Garden Services", "Landscaping and garden maintenance including lawn mowing, hedge trimming, patio cleaning and garden waste removal.", "From £59", serviceImages.garden,
     ["Lawn mowing and lawn care", "Hedge trimming and hedge maintenance", "Pressure washing and patio cleaning", "Seasonal planting", "Garden waste removal", "Regular maintenance plans"],
     ["CPMG provides landscaping and garden maintenance for gardens, rental homes and managed residential spaces. Services can include lawn mowing, hedge trimming, pressure washing, patio cleaning, seasonal planting and garden waste removal.", "Regular maintenance plans are available for customers who need consistent presentation and fewer last-minute callouts."]),
-  service("commercial", "communal-area-cleaning", "Communal Area Cleaning", "Scheduled cleaning for hallways, stairwells, lobbies, communal kitchens and bin stores.", "From £89", serviceImages.commercial,
-    ["Hallways, stairwells and lobbies", "Communal kitchens and touchpoints", "Bin stores and entrance areas", "Scheduled cleaning with account management"],
-    ["CPMG supports property managers, landlords and housing providers with scheduled communal area cleaning. We cover hallways, stairwells, lobbies, communal kitchens, bin stores and high-touch areas.", "Commercial clients can agree regular attendance, site notes and account management so standards remain consistent across managed properties."]),
-  service("commercial", "window-cleaning", "Window Cleaning", "Interior and exterior commercial window cleaning using purified water and water-fed pole systems where suitable.", "From £49", serviceImages.commercial,
-    ["Interior and exterior window cleaning", "Water-fed pole systems", "Purified water finish", "High-level access where suitable", "Frames and sills", "Regular commercial contracts"],
-    ["CPMG commercial window cleaning covers offices, apartment blocks, retail premises and managed buildings. We clean interior and exterior glazing, frames and sills using purified water and water-fed pole systems where suitable.", "For larger or high-level access jobs, we assess access and safety before confirming the final quote."]),
-  service("commercial", "fire-alarm-callout", "Fire Alarm Callout", "Fast fire alarm callout support for commercial property safety, testing, inspection and fault diagnosis.", "Quote", serviceImages.commercial,
-    ["Urgent callout positioning", "Fast response attendance where available", "Testing, inspection and fault diagnosis", "BS 5839 servicing support", "Compliance reports", "Commercial property safety"],
-    ["CPMG provides responsive fire alarm callout support for commercial premises and managed property portfolios. Services may include testing, inspection, fault diagnosis and BS 5839 servicing support through competent personnel or approved partners.", "We can provide compliance reports where required and will prioritise urgent safety issues for commercial property clients."]),
-  service("commercial", "ground-maintenance", "Ground Maintenance", "Commercial estate grounds care, lawn care, hedge maintenance, litter picking, gritting and seasonal support.", "From £69", serviceImages.garden,
-    ["Lawn care and hedge maintenance", "Litter picking and car park sweeping", "Seasonal planting", "Gritting and snow clearance", "Commercial estate maintenance"],
-    ["CPMG ground maintenance helps commercial estates, apartment blocks and property managers keep external areas tidy, safe and presentable. Work can include lawn care, hedge maintenance, litter picking, car park sweeping and seasonal planting.", "Winter support such as gritting and snow clearance can be quoted for suitable sites."]),
   service("commercial", "office-cleaning", "Office Cleaning", "Commercial office cleaning for desks, workstations, kitchens, bathrooms and high-touch surfaces.", "From £79", serviceImages.commercial,
     ["Desks and workstations", "Kitchens and bathrooms", "High-touch surfaces", "Flexible out-of-hours cleaning", "Daily, weekly or recurring contracts"],
     ["CPMG commercial office cleaning is built around reliable recurring attendance and clear specifications. We clean desks, workstations, kitchens, bathrooms, floors and high-touch surfaces.", "Flexible out-of-hours cleaning can be arranged for daily, weekly or recurring commercial contracts."]),
+  service("commercial", "communal-area-cleaning", "Communal Area Cleaning", "Scheduled cleaning for hallways, stairwells, lobbies, communal kitchens and bin stores.", "From £89", serviceImages.hallway,
+    ["Hallways, stairwells and lobbies", "Communal kitchens and touchpoints", "Bin stores and entrance areas", "Scheduled cleaning with account management"],
+    ["CPMG supports property managers, landlords and housing providers with scheduled communal area cleaning. We cover hallways, stairwells, lobbies, communal kitchens, bin stores and high-touch areas.", "Commercial clients can agree regular attendance, site notes and account management so standards remain consistent across managed properties."]),
+  service("commercial", "window-cleaning", "Window Cleaning", "Interior and exterior commercial window cleaning using purified water and water-fed pole systems where suitable.", "From £49", serviceImages.windows,
+    ["Interior and exterior window cleaning", "Water-fed pole systems", "Purified water finish", "High-level access where suitable", "Frames and sills", "Regular commercial contracts"],
+    ["CPMG commercial window cleaning covers offices, apartment blocks, retail premises and managed buildings. We clean interior and exterior glazing, frames and sills using purified water and water-fed pole systems where suitable.", "For larger or high-level access jobs, we assess access and safety before confirming the final quote."]),
+  service("commercial", "ground-maintenance", "Ground Maintenance", "Commercial estate grounds care, lawn care, hedge maintenance, litter picking, gritting and seasonal support.", "From £69", serviceImages.garden,
+    ["Lawn care and hedge maintenance", "Litter picking and car park sweeping", "Seasonal planting", "Gritting and snow clearance", "Commercial estate maintenance"],
+    ["CPMG ground maintenance helps commercial estates, apartment blocks and property managers keep external areas tidy, safe and presentable. Work can include lawn care, hedge maintenance, litter picking, car park sweeping and seasonal planting.", "Winter support such as gritting and snow clearance can be quoted for suitable sites."]),
   service("commercial", "waste-removal", "Waste Removal", "Responsible household and commercial waste removal with same-day or next-day slots where possible.", "From £49", serviceImages.waste,
     ["Household and commercial waste", "Furniture, appliances and garden waste", "Construction debris where permitted", "Same-day or next-day slots where possible", "Responsible recycling", "Waste transfer notes"],
     ["CPMG waste removal supports homes, landlords, offices, managed buildings and light commercial sites. We can remove household waste, commercial waste, furniture, appliances, garden waste and permitted construction debris.", "Waste is handled responsibly, with recycling considered where possible and waste transfer notes provided when required."]),
-  service("commercial", "sparkle-cleaning", "Sparkle Cleaning", "Show-home standard cleaning for new builds, sales suites, viewings and post-construction handover.", "From £119", serviceImages.commercial,
+  service("commercial", "sparkle-cleaning", "Sparkle Cleaning", "Show-home standard cleaning for new builds, sales suites, viewings and post-construction handover.", "From £119", serviceImages.sparkle,
     ["Show-home standard cleaning", "New builds, sales suites and viewings", "Post-construction dust removal", "Paint splash detail cleaning", "Glass and chrome polishing", "Fast turnaround"],
-    ["CPMG sparkle cleaning is for sites that need a high-standard finish before viewing, sale, handover or presentation. We focus on post-construction dust, paint splashes, glass polishing, chrome polishing and detailed presentation.", "Fast turnaround can be quoted for new builds, sales suites and urgent viewing preparation."])
+    ["CPMG sparkle cleaning is for sites that need a high-standard finish before viewing, sale, handover or presentation. We focus on post-construction dust, paint splashes, glass polishing, chrome polishing and detailed presentation.", "Fast turnaround can be quoted for new builds, sales suites and urgent viewing preparation."]),
+  service("commercial", "fire-alarm-callout", "Fire Alarm Callout", "Fast fire alarm callout support for commercial property safety, testing, inspection and fault diagnosis.", "Quote", serviceImages.commercial,
+    ["Urgent callout positioning", "Fast response attendance where available", "Testing, inspection and fault diagnosis", "BS 5839 servicing support", "Compliance reports", "Commercial property safety"],
+    ["CPMG provides responsive fire alarm callout support for commercial premises and managed property portfolios. Services may include testing, inspection, fault diagnosis and BS 5839 servicing support through competent personnel or approved partners.", "We can provide compliance reports where required and will prioritise urgent safety issues for commercial property clients."])
 ];
 
 applyServiceOverrides();
@@ -197,31 +228,27 @@ function canonicalUrl() {
   return `${contact.domain}${path === "/" ? "/" : path}`;
 }
 
-function hero({ eyebrow, title, text, primary = "Book a Service", secondary = "Request a Quote", image = serviceImages.commercial, compact = false }) {
-  return `<section class="hero ${compact ? "compact" : ""}" style="--hero-image:${image}">
-    <div class="hero-inner">
-      <div>
-        <div class="eyebrow">${eyebrow}</div>
+function hero({ brand = "Crown Property Management Group", title, text, primary = "Book a Service", secondary = "Request a Quote", image = serviceImages.hero, variant = "home" }) {
+  const isHome = variant === "home";
+  return `<section class="hero ${isHome ? "hero-home" : "hero-compact"}" style="--hero-image:${image}">
+    <div class="hero-inner ${isHome ? "hero-inner-home" : ""}">
+      <div class="hero-copy">
+        <p class="brand-lockup">${brand}</p>
         <h1>${title}</h1>
         <p class="lead">${text}</p>
         <div class="actions">
           <a class="button primary" href="/booking" data-link>${primary}</a>
           <a class="button outline" href="/contact" data-link>${secondary}</a>
         </div>
-        ${trustBadges()}
       </div>
-      <aside class="hero-panel">
-        <img class="brand-mark" src="/cpmg-logo.png" width="118" height="118" alt="Crown Property Management Group Ltd">
-        <h2>Insured property support with fast, practical communication.</h2>
-        <p>Domestic and commercial bookings, quote requests and urgent property service enquiries handled by one team.</p>
-      </aside>
     </div>
   </section>`;
 }
 
-function pageHeader({ eyebrow, title, text, primary = "", secondary = "" }) {
+function pageHeader({ eyebrow, title, text, primary = "", secondary = "", image = "" }) {
   const actions = primary || secondary ? `<div class="actions slim-actions">${primary ? `<a class="button primary" href="/booking" data-link>${primary}</a>` : ""}${secondary ? `<a class="button outline" href="/contact" data-link>${secondary}</a>` : ""}</div>` : "";
-  return `<section class="page-header">
+  const style = image ? ` style="--page-image:${image}"` : "";
+  return `<section class="page-header ${image ? "page-header-visual" : ""}"${style}>
     <div class="section-inner">
       <div>
         <div class="eyebrow">${eyebrow}</div>
@@ -234,40 +261,109 @@ function pageHeader({ eyebrow, title, text, primary = "", secondary = "" }) {
 }
 
 function bookingHeader() {
-  return `<section class="booking-hero">
+  return `<section class="booking-hero" style="--hero-image:${serviceImages.domestic}">
     <div class="section-inner">
+      <p class="brand-lockup">Crown Property Management Group</p>
       <h1>Book Your Service</h1>
       <p>Select your service, share your details and CPMG will confirm availability and the final quote.</p>
     </div>
   </section>`;
 }
 
-function trustBadges() {
-  return `<div class="trust-row">${badges.map((badge) => `<span class="badge">${badge}</span>`).join("")}</div>`;
+function trustStrip() {
+  const items = [
+    ["Insured", "Professional service model"],
+    ["Bristol based", "Old Stock Exchange office"],
+    ["7 days", "7:00am to 8:00pm"],
+    ["Clear quotes", "Confirmed before work"],
+    ["Domestic + Commercial", "One property team"]
+  ];
+  return `<section class="trust-strip" aria-label="CPMG trust points"><div class="section-inner trust-strip-grid">${items.map(([title, text]) => `<div><strong>${title}</strong><span>${text}</span></div>`).join("")}</div></section>`;
 }
 
 function homePage() {
   setMeta("Crown Property Management Group Ltd | Cleaning and Property Support", "Professional cleaning, property maintenance, grounds care and waste removal services for homes, landlords, businesses and property managers in Bristol and surrounding areas.");
+  const featured = featuredServiceSlugs.map((slug) => services.find((item) => item.slug === slug)).filter(Boolean);
   app.innerHTML = `${hero({
-    eyebrow: "Crown Property Management Group Ltd",
-    title: "Cleaning & Property Management Services in Bristol",
-    text: "CPMG provides domestic and commercial cleaning, maintenance, grounds care, waste removal and property support services for homes, landlords, businesses and property managers in Bristol and surrounding areas.",
+    title: "Property care that looks after Bristol homes and workplaces.",
+    text: "Insured cleaning, maintenance, grounds care and waste support for landlords, managers and businesses — planned clearly and delivered professionally.",
     primary: "Book a Service",
-    secondary: "Get a Quote"
+    secondary: "Get a Quote",
+    image: serviceImages.hero,
+    variant: "home"
   })}
-  <section class="section"><div class="section-inner">
-    <div class="section-head"><div><span class="eyebrow">Services</span><h2>Domestic and commercial property support</h2></div><p>Choose a service, compare from prices where available, then book or request a tailored quote.</p></div>
-    <p>CPMG supports everyday property requirements across Bristol and surrounding areas, including professional carpet cleaning, end of tenancy cleaning services, deep cleaning services for homes, landscaping and garden maintenance, commercial office cleaning, communal cleaning and waste removal. The site is built to help customers choose the right service quickly and send the details CPMG needs to respond with a practical next step.</p>
-    <div class="grid two">
-      ${overviewCard("Domestic Services", "Carpet Cleaning, End of Tenancy Cleaning, Deep Cleaning, Landscaping and Garden Services", "/services/domestic", serviceImages.domestic)}
-      ${overviewCard("Commercial Services", "Office Cleaning, Communal Area Cleaning, Window Cleaning, Ground Maintenance, Waste Removal, Fire Alarm Callout and Sparkle Cleaning", "/services/commercial", serviceImages.commercial)}
+  ${trustStrip()}
+  <section class="section pathway-section">
+    <div class="section-inner">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Services</span>
+          <h2>Choose the right path for your property</h2>
+        </div>
+        <p>Domestic care for homes and tenancies, or commercial support for offices, blocks and managed estates.</p>
+      </div>
+      <div class="pathway-grid">
+        ${pathwayPanel("Domestic", "Homes, tenants and landlords", "Carpet cleaning, end of tenancy cleans, deep cleans and garden care — booked with clear from prices where practical.", "/services/domestic", serviceImages.domestic, "View domestic services")}
+        ${pathwayPanel("Commercial", "Offices, blocks and estates", "Office cleaning, communal areas, windows, grounds, waste removal, sparkle cleans and fire alarm callout support.", "/services/commercial", serviceImages.commercial, "View commercial services")}
+      </div>
     </div>
-  </div></section>
-  ${popularServices()}
+  </section>
+  <section class="section alt">
+    <div class="section-inner">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Popular services</span>
+          <h2>Most requested CPMG work</h2>
+        </div>
+        <p>Fast routes into the services Bristol clients ask for most.</p>
+      </div>
+      <div class="featured-grid">${featured.map(featuredServiceTile).join("")}</div>
+    </div>
+  </section>
   ${processSteps()}
   ${whyChoose()}
-  ${commitmentsSection()}
-  ${cta("Ready to Book a Reliable Cleaning or Property Maintenance Service?", "Tell CPMG what you need and the team will confirm availability, pricing and next steps.", "Book a Service with CPMG", "Request a Cleaning or Maintenance Quote")}`;
+  ${sectorRibbon()}
+  ${proofSection()}
+  <section class="section">
+    <div class="section-inner commercial-band">
+      <div>
+        <span class="eyebrow">Commercial clients</span>
+        <h2>Contracts and callouts for managed property</h2>
+        <p>From recurring office cleans to urgent site support, CPMG quotes around specification, access, frequency and urgency.</p>
+      </div>
+      <div class="actions">
+        <a class="button primary" href="/services/commercial" data-link>Explore commercial services</a>
+        <a class="button outline" href="/contact" data-link>Request a commercial quote</a>
+      </div>
+    </div>
+  </section>
+  ${cta("Ready for cleaner, better-managed property?", "Tell CPMG what you need. The team will confirm availability, pricing and next steps.", "Book a Service", "Speak to CPMG")}`;
+}
+
+function pathwayPanel(title, kicker, text, href, image, label) {
+  return `<a class="pathway-panel" href="${href}" data-link style="--image:${image}">
+    <div class="pathway-panel-copy">
+      <span>${kicker}</span>
+      <h3>${title}</h3>
+      <p>${text}</p>
+      <em>${label}</em>
+    </div>
+  </a>`;
+}
+
+function featuredServiceTile(item) {
+  return `<a class="featured-tile" href="/services/${item.category}/${item.slug}" data-link>
+    <div class="featured-tile-media" style="--image:${item.heroImage}" role="img" aria-label="${item.title}"></div>
+    <div class="featured-tile-body">
+      <span class="eyebrow">${item.category}</span>
+      <h3>${item.title}</h3>
+      <p>${item.includedItems[0]}.</p>
+      <div class="featured-tile-meta">
+        <strong class="service-price">${item.priceLabel}</strong>
+        <span class="featured-link">View service</span>
+      </div>
+    </div>
+  </a>`;
 }
 
 function overviewCard(title, text, href, image) {
@@ -283,13 +379,12 @@ function popularServices() {
 }
 
 function serviceCard(item) {
-  return `<article class="card">
+  return `<article class="card service-card">
     <div class="card-img" style="--image:${item.heroImage}" role="img" aria-label="${item.title}"></div>
     <div class="card-body">
       <span class="eyebrow">${item.category}</span>
       <h3>${item.title}</h3>
       <p>${item.shortDescription}</p>
-      <ul class="list compact-list">${item.includedItems.slice(0, 4).map((point) => `<li>${point}</li>`).join("")}</ul>
       <span class="service-price">${item.priceLabel}</span>
       <p><a class="button outline" href="/services/${item.category}/${item.slug}" data-link>${item.category === "domestic" ? "View" : "Request"} ${publicServiceName(item.title).toLowerCase()}</a></p>
     </div>
@@ -305,10 +400,11 @@ function categoryPage(category) {
   );
   app.innerHTML = `${pageHeader({
     eyebrow: isDomestic ? "Domestic services" : "Commercial services",
-    title: isDomestic ? "Reliable Domestic Cleaning & Garden Services" : "Commercial Cleaning & Property Maintenance Support",
-    text: isDomestic ? "Book professional carpet cleaning, end of tenancy cleaning services, deep cleaning services for homes, and landscaping and garden maintenance in Bristol and surrounding areas." : "Request quotes for commercial office cleaning, communal area cleaning, fire alarm callouts, waste removal and property support for businesses and managed sites.",
+    title: isDomestic ? "Reliable domestic cleaning & garden care" : "Commercial cleaning & property maintenance",
+    text: isDomestic ? "Book professional carpet cleaning, end of tenancy cleaning, deep cleaning and landscaping across Bristol and surrounding areas." : "Request quotes for office cleaning, communal areas, fire alarm callouts, waste removal and managed-site support.",
     primary: isDomestic ? "Book Domestic Service" : "Request a Commercial Quote",
-    secondary: "Speak to CPMG"
+    secondary: "Speak to CPMG",
+    image: isDomestic ? serviceImages.domestic : serviceImages.commercial
   })}
   <section class="section"><div class="section-inner">
     <div class="section-head"><div><span class="eyebrow">${category}</span><h2>${isDomestic ? "Domestic service range" : "Commercial service range"}</h2></div><p>${isDomestic ? "Clear from prices are shown where practical." : "Commercial jobs are priced around site specification, frequency, access and urgency."}</p></div>
@@ -318,7 +414,7 @@ function categoryPage(category) {
   ${gallerySection()}
   ${isDomestic ? whyChoose() : sectorSection()}
   ${faqSection(isDomestic ? domesticFaqs() : commercialFaqs())}
-  ${cta(isDomestic ? "Book a Domestic Service With CPMG" : "Request a Commercial Quote", isDomestic ? "Choose your preferred service and send your property details in a few steps." : "Send your site details and CPMG will confirm the right specification and quote.", isDomestic ? "Book a Domestic Cleaning Service" : "Request a Commercial Property Support Quote", "Contact Crown Property Management Group Ltd")}`;
+  ${cta(isDomestic ? "Book a domestic service with CPMG" : "Request a commercial quote", isDomestic ? "Choose your preferred service and send your property details in a few steps." : "Send your site details and CPMG will confirm the right specification and quote.", isDomestic ? "Book a Domestic Service" : "Request a Commercial Quote", "Contact CPMG")}`;
 }
 
 function categoryInfoSection(category) {
@@ -339,7 +435,8 @@ function servicePage(item) {
     title: item.title,
     text: item.heroSubtitle,
     primary: item.ctaButtonText,
-    secondary: "Speak to CPMG"
+    secondary: "Speak to CPMG",
+    image: item.heroImage
   })}
   <section class="section"><div class="section-inner">
     ${breadcrumbs([{ label: item.category === "domestic" ? "Domestic" : "Commercial", href: `/services/${item.category}` }, { label: item.title }])}
@@ -355,10 +452,10 @@ function servicePage(item) {
         <h2>Before you book</h2>
         <p>Use the booking form to describe the job clearly and include photos or extra notes later if requested by the team. CPMG will confirm availability, scope and pricing before work begins, and will explain if a task needs a separate quote or specialist arrangement.</p>
       </article>
-      <aside class="quote-band">
-        <h2>Book This Service</h2>
+      <aside class="quote-band sticky-quote">
+        <h2>Book this service</h2>
         <p>${item.seoSections[1]}</p>
-        <div class="actions"><a class="button primary" href="/booking" data-link>${item.ctaButtonText} with CPMG</a><a class="button outline" href="/contact" data-link>Contact Crown Property Management Group Ltd</a></div>
+        <div class="actions"><a class="button primary" href="/booking" data-link>${item.ctaButtonText}</a><a class="button outline" href="/contact" data-link>Contact CPMG</a></div>
       </aside>
     </div>
   </div></section>
@@ -368,7 +465,7 @@ function servicePage(item) {
     <div class="faq">${item.faqs.map((faq) => `<details><summary>${faq.q}</summary><p>${faq.a}</p></details>`).join("")}</div>
   </div></section>
   <section class="section alt"><div class="section-inner"><h2>Related services</h2><div class="grid three">${related.map(serviceCard).join("")}</div></div></section>
-  ${cta(`Ready to Arrange ${item.title}?`, "Send CPMG your requirements and the team will confirm the final quote before work begins.", `${item.ctaButtonText} with CPMG`, "Contact Crown Property Management Group Ltd")}`;
+  ${cta(`Ready to arrange ${item.title}?`, "Send CPMG your requirements and the team will confirm the final quote before work begins.", item.ctaButtonText, "Contact CPMG")}`;
 }
 
 function breadcrumbs(items) {
@@ -377,8 +474,8 @@ function breadcrumbs(items) {
 
 function gallerySection(images = [serviceImages.domestic, serviceImages.commercial, serviceImages.garden]) {
   return `<section class="section alt"><div class="section-inner">
-    <div class="section-head"><div><span class="eyebrow">Gallery</span><h2>Professional property service environments</h2></div><p>Visual style for cleaning, managed property, grounds and maintenance work across CPMG services.</p></div>
-    <div class="grid three">${images.map((image, index) => `<div class="card-img" style="--image:${image}; min-height:240px" role="img" aria-label="CPMG service gallery image ${index + 1}"></div>`).join("")}</div>
+    <div class="section-head"><div><span class="eyebrow">On site</span><h2>Property environments CPMG supports</h2></div><p>Homes, workplaces, grounds and managed buildings across Bristol and surrounding areas.</p></div>
+    <div class="gallery-grid">${images.map((image, index) => `<div class="gallery-frame" style="--image:${image}" role="img" aria-label="CPMG service gallery image ${index + 1}"></div>`).join("")}</div>
   </div></section>`;
 }
 
@@ -406,28 +503,52 @@ function commercialFaqs() {
 }
 
 function processSteps() {
-  return `<section class="section"><div class="section-inner">
-    <div class="section-head"><div><span class="eyebrow">How it works</span><h2>Simple booking flow</h2></div></div>
-    <div class="grid three steps">
-      <div class="step"><h3>Choose your service</h3><p>Select the cleaning, maintenance or property support service you need.</p></div>
-      <div class="step"><h3>Select date and time</h3><p>Share your preferred slot, urgency and property details.</p></div>
-      <div class="step"><h3>CPMG attends</h3><p>The team confirms the quote, attends and completes the agreed work.</p></div>
+  return `<section class="section process-section"><div class="section-inner">
+    <div class="section-head"><div><span class="eyebrow">How it works</span><h2>Book in three clear steps</h2></div><p>A simple flow from enquiry to confirmed attendance.</p></div>
+    <div class="process-grid">
+      <div class="process-step"><span>01</span><h3>Choose your service</h3><p>Select domestic or commercial support and the job that matches your property.</p></div>
+      <div class="process-step"><span>02</span><h3>Share date and details</h3><p>Tell CPMG about access, timing, urgency and anything that affects the quote.</p></div>
+      <div class="process-step"><span>03</span><h3>CPMG confirms and attends</h3><p>The team confirms pricing, arrives as agreed and completes the scoped work.</p></div>
     </div>
   </div></section>`;
 }
 
 function whyChoose() {
   return `<section class="section alt"><div class="section-inner">
-    <div class="section-head"><div><span class="eyebrow">Why choose CPMG</span><h2>Reliable, insured and service-led</h2></div></div>
-    <div class="grid four">${benefits.map((item) => `<div class="mini-kpi"><strong>${item}</strong><p class="muted">Professional standards with clear communication from enquiry to completion.</p></div>`).join("")}</div>
+    <div class="section-head"><div><span class="eyebrow">Why CPMG</span><h2>Built for reliable property support</h2></div><p>Stronger than a generic cleaning brochure — practical standards for Bristol homes and managed sites.</p></div>
+    <div class="benefit-grid">${benefits.map((item) => `<article class="benefit-item"><h3>${item.title}</h3><p>${item.text}</p></article>`).join("")}</div>
+  </div></section>`;
+}
+
+function sectorRibbon() {
+  return `<section class="section sector-ribbon"><div class="section-inner">
+    <div class="section-head"><div><span class="eyebrow">Who we support</span><h2>Homes, landlords and commercial property teams</h2></div></div>
+    <ul class="sector-list">${sectors.map((item) => `<li>${item}</li>`).join("")}</ul>
   </div></section>`;
 }
 
 function sectorSection() {
-  return `<section class="section alt"><div class="section-inner">
-    <div class="section-head"><div><span class="eyebrow">Sectors served</span><h2>Built for commercial property needs</h2></div></div>
-    <div class="grid four">${sectors.map((item) => `<div class="mini-kpi"><strong>${item}</strong><p class="muted">Cleaning, maintenance and site support tailored to access and specification.</p></div>`).join("")}</div>
-  </div></section>${whyChoose()}`;
+  return `${sectorRibbon()}${whyChoose()}`;
+}
+
+function proofSection() {
+  return `<section class="section proof-section"><div class="section-inner">
+    <div class="section-head"><div><span class="eyebrow">Standards</span><h2>What good property support looks like</h2></div><p>Clear communication, confirmed scope and professional attendance — every time.</p></div>
+    <div class="proof-grid">
+      <blockquote>
+        <p>“End of tenancy presentation needs to be landlord-ready, not just superficially tidy. CPMG focuses on kitchens, bathrooms, appliances and the details letting agents actually check.”</p>
+        <footer>Property presentation standard</footer>
+      </blockquote>
+      <blockquote>
+        <p>“Commercial sites need reliable attendance windows, clear specifications and a team that understands access and out-of-hours work.”</p>
+        <footer>Managed site standard</footer>
+      </blockquote>
+      <blockquote>
+        <p>“Quotes should be confirmed before work begins. CPMG reviews size, condition, access and requirements so pricing stays practical and transparent.”</p>
+        <footer>Pricing standard</footer>
+      </blockquote>
+    </div>
+  </div></section>`;
 }
 
 function commitmentsSection() {
@@ -438,7 +559,7 @@ function commitmentsSection() {
 }
 
 function cta(title, text, primary, secondary) {
-  return `<section class="section"><div class="section-inner quote-band"><h2>${title}</h2><p>${text}</p><div class="actions"><a class="button primary" href="/booking" data-link>${primary}</a><a class="button outline" href="/contact" data-link>${secondary}</a></div></div></section>`;
+  return `<section class="section cta-section"><div class="section-inner quote-band cta-band"><div><h2>${title}</h2><p>${text}</p></div><div class="actions"><a class="button primary" href="/booking" data-link>${primary}</a><a class="button outline" href="/contact" data-link>${secondary}</a></div></div></section>`;
 }
 
 function bookingPage() {
@@ -582,10 +703,23 @@ function selectField(name, label, options) {
 
 function contactPage() {
   setMeta("Contact Crown Property Management Group Ltd", "Contact Crown Property Management Group Ltd to enquire about cleaning, property maintenance, grounds care and waste removal services.");
-  app.innerHTML = `${pageHeader({ eyebrow: "Contact", title: "Contact CPMG", text: "Send a general enquiry, quote request or service question and the CPMG team will respond as soon as possible." })}
+  app.innerHTML = `${pageHeader({
+    eyebrow: "Contact",
+    title: "Talk to CPMG",
+    text: "Send a general enquiry, quote request or service question. The team responds across Bristol and surrounding areas.",
+    image: serviceImages.commercial
+  })}
   <section class="section"><div class="section-inner split">
     ${contactForm()}
-    <aside class="quote-band"><h2>Contact information</h2><p><strong>Phone:</strong> <a href="${contact.phoneHref}">${contact.phone}</a></p><p><strong>Email:</strong> <a href="mailto:${contact.email}">${contact.email}</a></p><p><strong>Office:</strong> ${contact.office}</p><p><strong>Service area:</strong> ${contact.serviceArea}</p><p><strong>Opening hours:</strong> ${contact.hours}</p></aside>
+    <aside class="quote-band contact-band">
+      <h2>Contact information</h2>
+      <p><strong>Phone:</strong> <a href="${contact.phoneHref}">${contact.phone}</a></p>
+      <p><strong>Email:</strong> <a href="mailto:${contact.email}">${contact.email}</a></p>
+      <p><strong>Office:</strong> ${contact.office}</p>
+      <p><strong>Service area:</strong> ${contact.serviceArea}</p>
+      <p><strong>Opening hours:</strong> ${contact.hours}</p>
+      <div class="actions"><a class="button primary" href="/booking" data-link>Book a Service</a></div>
+    </aside>
   </div></section>`;
 }
 
@@ -603,10 +737,34 @@ function contactForm() {
 
 function aboutPage() {
   setMeta("About Crown Property Management Group Ltd", "Learn about Crown Property Management Group Ltd and its cleaning, property maintenance, grounds care and waste removal services in Bristol and surrounding areas.");
-  app.innerHTML = `${pageHeader({ eyebrow: "About CPMG", title: "Professional Property Support for Homes, Landlords and Businesses", text: "Professional cleaning and property maintenance services for homes, landlords, businesses and property managers in Bristol and surrounding areas." })}
-  <section class="section"><div class="section-inner split"><div><h2>Company overview</h2><p>Crown Property Management Group Ltd (CPMG) provides cleaning, maintenance, grounds care, waste removal and related property services across domestic and commercial sectors.</p><p>Company number: 16933005. Registered office: ${contact.office}. The company works to an insured service model and confirms scope, access and quote details before work begins.</p></div><div class="grid two"><div class="mini-kpi"><strong>Bristol area</strong><p>Service area focus</p></div><div class="mini-kpi"><strong>Insured</strong><p>Professional delivery model</p></div><div class="mini-kpi"><strong>Domestic + Commercial</strong><p>Flexible property support</p></div><div class="mini-kpi"><strong>Clear quotes</strong><p>Pricing confirmed before work begins</p></div></div></div></section>
-  <section class="section alt"><div class="section-inner grid two"><div><h2>Who CPMG helps</h2><ul class="list"><li>Homeowners and tenants</li><li>Landlords and letting agents</li><li>Property managers and facilities teams</li><li>Businesses and commercial premises</li></ul></div><div><h2>Services provided</h2><ul class="list"><li>Domestic cleaning and tenancy cleans</li><li>Commercial and communal area cleaning</li><li>Grounds and garden maintenance</li><li>Waste removal and fire alarm callout support</li></ul></div></div></section>
-  ${gallerySection()}${whyChoose()}${commitmentsSection()}${cta("Ready for a Cleaner, Safer Property?", "Book a service or speak to CPMG about your property support requirements.", "Book a Service with CPMG", "Contact Crown Property Management Group Ltd")}`;
+  app.innerHTML = `${pageHeader({
+    eyebrow: "About CPMG",
+    title: "Professional property support for homes, landlords and businesses",
+    text: "Crown Property Management Group Ltd delivers insured cleaning, maintenance, grounds care and waste services from Bristol’s Old Stock Exchange.",
+    primary: "Book a Service",
+    secondary: "Contact CPMG",
+    image: serviceImages.hero
+  })}
+  <section class="section"><div class="section-inner split about-split">
+    <div>
+      <h2>Company overview</h2>
+      <p>Crown Property Management Group Ltd (CPMG) provides cleaning, maintenance, grounds care, waste removal and related property services across domestic and commercial sectors.</p>
+      <p>Company number: 16933005. Registered office: ${contact.office}. The company works to an insured service model and confirms scope, access and quote details before work begins.</p>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-card"><strong>Bristol</strong><span>Service area focus</span></div>
+      <div class="stat-card"><strong>Insured</strong><span>Professional delivery</span></div>
+      <div class="stat-card"><strong>7 days</strong><span>${contact.hours}</span></div>
+      <div class="stat-card"><strong>One team</strong><span>Domestic + commercial</span></div>
+    </div>
+  </div></section>
+  <section class="section alt"><div class="section-inner grid two">
+    <div><h2>Who CPMG helps</h2><ul class="list"><li>Homeowners and tenants</li><li>Landlords and letting agents</li><li>Property managers and facilities teams</li><li>Businesses and commercial premises</li></ul></div>
+    <div><h2>Services provided</h2><ul class="list"><li>Domestic cleaning and tenancy cleans</li><li>Commercial and communal area cleaning</li><li>Grounds and garden maintenance</li><li>Waste removal and fire alarm callout support</li></ul></div>
+  </div></section>
+  ${gallerySection()}
+  ${whyChoose()}
+  ${cta("Ready for cleaner, safer property?", "Book a service or speak to CPMG about your property support requirements.", "Book a Service", "Contact CPMG")}`;
 }
 
 function careersPage() {
