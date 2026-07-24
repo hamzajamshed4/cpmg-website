@@ -13,6 +13,11 @@ Upload these into your `public_html` folder (keep the `api` folder as a folder):
     app.js
     styles.css
     cpmg-logo.png
+    cpmg-logo.svg
+    og-image.png
+    favicon-16.png
+    favicon-32.png
+    apple-touch-icon.png
     sitemap.xml
     robots.txt
     404.html

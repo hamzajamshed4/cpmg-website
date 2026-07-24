@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" role="img" aria-labelledby="cpmgTitle cpmgDesc">
+  <title id="cpmgTitle">CPMG</title>
+  <desc id="cpmgDesc">Crown Property Management Group Ltd logo</desc>
+  <defs>
+    <linearGradient id="frontSide" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#1f3346"/>
+      <stop offset="100%" stop-color="#314c63"/>
+    </linearGradient>
+    <linearGradient id="midSide" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#4a657c"/>
+      <stop offset="100%" stop-color="#6d8498"/>
+    </linearGradient>
+    <linearGradient id="backSide" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#7f96a9"/>
+      <stop offset="100%" stop-color="#a3b6c6"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Back building -->
+  <g transform="translate(176,54)">
+    <polygon fill="url(#backSide)" points="36,0 78,16 78,152 36,136"/>
+    <rect x="0" y="0" width="36" height="136" fill="#8fa5b7"/>
+    <g fill="#f4f7fa">
+      <rect x="5" y="10" width="26" height="4.5"/><rect x="5" y="22" width="26" height="4.5"/>
+      <rect x="5" y="34" width="26" height="4.5"/><rect x="5" y="46" width="26" height="4.5"/>
+      <rect x="5" y="58" width="26" height="4.5"/><rect x="5" y="70" width="26" height="4.5"/>
+      <rect x="5" y="82" width="26" height="4.5"/><rect x="5" y="94" width="26" height="4.5"/>
+    </g>
+    <g fill="#d7e1ea">
+      <rect x="4" y="112" width="5.5" height="24"/>
+      <rect x="15" y="112" width="5.5" height="24"/>
+      <rect x="26" y="112" width="5.5" height="24"/>
+    </g>
+  </g>
+
+  <!-- Mid building -->
+  <g transform="translate(122,40)">
+    <polygon fill="url(#midSide)" points="40,0 88,18 88,168 40,150"/>
+    <rect x="0" y="0" width="40" height="150" fill="#5a7389"/>
+    <g fill="#eef3f7">
+      <rect x="6" y="12" width="28" height="5"/><rect x="6" y="26" width="28" height="5"/>
+      <rect x="6" y="40" width="28" height="5"/><rect x="6" y="54" width="28" height="5"/>
+      <rect x="6" y="68" width="28" height="5"/><rect x="6" y="82" width="28" height="5"/>
+      <rect x="6" y="96" width="28" height="5"/><rect x="6" y="110" width="28" height="5"/>
+    </g>
+    <g fill="#c5d3df">
+      <rect x="5" y="128" width="6.5" height="22"/>
+      <rect x="17" y="128" width="6.5" height="22"/>
+      <rect x="29" y="128" width="6.5" height="22"/>
+    </g>
+  </g>
+
+  <!-- Front building -->
+  <g transform="translate(62,24)">
+    <polygon fill="url(#frontSide)" points="46,0 102,22 102,190 46,168"/>
+    <rect x="0" y="0" width="46" height="168" fill="#24384c"/>
+    <g fill="#edf2f6">
+      <rect x="7" y="14" width="32" height="5.5"/><rect x="7" y="30" width="32" height="5.5"/>
+      <rect x="7" y="46" width="32" height="5.5"/><rect x="7" y="62" width="32" height="5.5"/>
+      <rect x="7" y="78" width="32" height="5.5"/><rect x="7" y="94" width="32" height="5.5"/>
+      <rect x="7" y="110" width="32" height="5.5"/><rect x="7" y="126" width="32" height="5.5"/>
+    </g>
+    <g fill="#9eb2c3">
+      <rect x="6" y="144" width="7.5" height="24"/>
+      <rect x="19.5" y="144" width="7.5" height="24"/>
+      <rect x="33" y="144" width="7.5" height="24"/>
+    </g>
+  </g>
+
+  <text x="160" y="266" text-anchor="middle" font-family="Libre Baskerville, Georgia, 'Times New Roman', serif" font-size="40" font-weight="700" letter-spacing="5" fill="#24384c">C.P.M.G.</text>
+</svg>

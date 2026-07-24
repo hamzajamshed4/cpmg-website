@@ -3,7 +3,10 @@ const contact = {
   phoneHref: "tel:01172870518",
   email: "info@cpmanagementgroup.co.uk",
   careersEmail: "",
-  office: "56 Daventry Road, Bristol, England, BS4 1DQ",
+  office: "Old Stock Exchange, 3rd Floor, St. Nicholas Street, Bristol, England, BS1 1TG",
+  officeStreet: "Old Stock Exchange, 3rd Floor, St. Nicholas Street",
+  officeLocality: "Bristol",
+  officePostcode: "BS1 1TG",
   hours: "Monday to Sunday, 7:00am to 8:00pm",
   serviceArea: "Bristol and surrounding areas",
   domain: window.__CPMG_SITE_URL__ || "https://www.cpmanagementgroup.co.uk"
@@ -12,7 +15,20 @@ const contact = {
 const badges = ["Insured Service Model", "Fast Response", "Clear Quotes", "Domestic and Commercial", "Bristol and Surrounding Areas", "Professional Support"];
 const benefits = ["Experienced team", "Insured service model", "Appropriate checks where required", "Eco-conscious products where practical", "Clear quote confirmation", "Fast response", "Domestic and commercial specialists", "Professional customer service"];
 const sectors = ["Offices", "Apartment blocks", "Letting agents", "Landlords", "Property managers", "Retail premises", "New-build sites", "Commercial estates"];
-const serviceOptions = ["Carpet Cleaning", "End of Tenancy Cleaning", "Deep Cleaning", "Landscaping and Garden", "Office Cleaning", "Communal Area Cleaning", "Fire Alarm Callout", "Waste Removal", "Other"];
+const serviceOptions = [
+  "Carpet Cleaning",
+  "End of Tenancy Cleaning",
+  "Deep Cleaning",
+  "Landscaping and Garden",
+  "Office Cleaning",
+  "Communal Area Cleaning",
+  "Window Cleaning",
+  "Ground Maintenance",
+  "Fire Alarm Callout",
+  "Waste Removal",
+  "Sparkle Cleaning",
+  "Other"
+];
 const bookingServiceTitles = serviceOptions.filter((item) => item !== "Other");
 const serviceCommitments = ["Clear enquiry handling", "Quote confirmation before work begins", "Accessible contact routes", "Professional conduct on site"];
 const leadStatuses = ["new", "contacted", "quoted", "booked", "completed", "cancelled"];
@@ -114,7 +130,14 @@ function defaultFaqs(title) {
 
 const app = document.querySelector("#app");
 document.querySelector("[data-year]").textContent = new Date().getFullYear();
-document.querySelector("[data-menu-toggle]").addEventListener("click", () => document.querySelector("[data-header]").classList.toggle("open"));
+document.querySelector("[data-menu-toggle]").addEventListener("click", () => {
+  const header = document.querySelector("[data-header]");
+  const open = header.classList.toggle("open");
+  document.querySelector("[data-menu-toggle]").setAttribute("aria-expanded", open ? "true" : "false");
+});
+window.addEventListener("scroll", () => {
+  document.querySelector("[data-header]")?.classList.toggle("is-scrolled", window.scrollY > 8);
+}, { passive: true });
 document.addEventListener("click", (event) => {
   const link = event.target.closest("[data-link]");
   if (!link) return;
@@ -188,7 +211,7 @@ function hero({ eyebrow, title, text, primary = "Book a Service", secondary = "R
         ${trustBadges()}
       </div>
       <aside class="hero-panel">
-        <img src="/cpmg-logo.png" alt="Crown Property Management Group Ltd">
+        <img class="brand-mark" src="/cpmg-logo.png" width="118" height="118" alt="Crown Property Management Group Ltd">
         <h2>Insured property support with fast, practical communication.</h2>
         <p>Domestic and commercial bookings, quote requests and urgent property service enquiries handled by one team.</p>
       </aside>
@@ -562,7 +585,7 @@ function contactPage() {
   app.innerHTML = `${pageHeader({ eyebrow: "Contact", title: "Contact CPMG", text: "Send a general enquiry, quote request or service question and the CPMG team will respond as soon as possible." })}
   <section class="section"><div class="section-inner split">
     ${contactForm()}
-    <aside class="quote-band"><h2>Contact information</h2><p><strong>Phone:</strong> <a href="${contact.phoneHref}">${contact.phone}</a></p><p><strong>Email:</strong> <a href="mailto:${contact.email}">${contact.email}</a></p><p><strong>Registered office:</strong> ${contact.office}</p><p><strong>Service area:</strong> ${contact.serviceArea}</p><p><strong>Opening hours:</strong> ${contact.hours}</p></aside>
+    <aside class="quote-band"><h2>Contact information</h2><p><strong>Phone:</strong> <a href="${contact.phoneHref}">${contact.phone}</a></p><p><strong>Email:</strong> <a href="mailto:${contact.email}">${contact.email}</a></p><p><strong>Office:</strong> ${contact.office}</p><p><strong>Service area:</strong> ${contact.serviceArea}</p><p><strong>Opening hours:</strong> ${contact.hours}</p></aside>
   </div></section>`;
 }
 
@@ -581,7 +604,7 @@ function contactForm() {
 function aboutPage() {
   setMeta("About Crown Property Management Group Ltd", "Learn about Crown Property Management Group Ltd and its cleaning, property maintenance, grounds care and waste removal services in Bristol and surrounding areas.");
   app.innerHTML = `${pageHeader({ eyebrow: "About CPMG", title: "Professional Property Support for Homes, Landlords and Businesses", text: "Professional cleaning and property maintenance services for homes, landlords, businesses and property managers in Bristol and surrounding areas." })}
-  <section class="section"><div class="section-inner split"><div><h2>Company overview</h2><p>CPMG Crown Property Management Group Ltd provides cleaning, maintenance, grounds care, waste removal and related property services across domestic and commercial sectors.</p><p>Company number: 16933005. Registered office: ${contact.office}. The company works to an insured service model and confirms scope, access and quote details before work begins.</p></div><div class="grid two"><div class="mini-kpi"><strong>Bristol area</strong><p>Service area focus</p></div><div class="mini-kpi"><strong>Insured</strong><p>Professional delivery model</p></div><div class="mini-kpi"><strong>Domestic + Commercial</strong><p>Flexible property support</p></div><div class="mini-kpi"><strong>Clear quotes</strong><p>Pricing confirmed before work begins</p></div></div></div></section>
+  <section class="section"><div class="section-inner split"><div><h2>Company overview</h2><p>Crown Property Management Group Ltd (CPMG) provides cleaning, maintenance, grounds care, waste removal and related property services across domestic and commercial sectors.</p><p>Company number: 16933005. Registered office: ${contact.office}. The company works to an insured service model and confirms scope, access and quote details before work begins.</p></div><div class="grid two"><div class="mini-kpi"><strong>Bristol area</strong><p>Service area focus</p></div><div class="mini-kpi"><strong>Insured</strong><p>Professional delivery model</p></div><div class="mini-kpi"><strong>Domestic + Commercial</strong><p>Flexible property support</p></div><div class="mini-kpi"><strong>Clear quotes</strong><p>Pricing confirmed before work begins</p></div></div></div></section>
   <section class="section alt"><div class="section-inner grid two"><div><h2>Who CPMG helps</h2><ul class="list"><li>Homeowners and tenants</li><li>Landlords and letting agents</li><li>Property managers and facilities teams</li><li>Businesses and commercial premises</li></ul></div><div><h2>Services provided</h2><ul class="list"><li>Domestic cleaning and tenancy cleans</li><li>Commercial and communal area cleaning</li><li>Grounds and garden maintenance</li><li>Waste removal and fire alarm callout support</li></ul></div></div></section>
   ${gallerySection()}${whyChoose()}${commitmentsSection()}${cta("Ready for a Cleaner, Safer Property?", "Book a service or speak to CPMG about your property support requirements.", "Book a Service with CPMG", "Contact Crown Property Management Group Ltd")}`;
 }
@@ -820,7 +843,7 @@ function injectDirectGa4(measurementId) {
 function privacyPage() {
   setMeta("Privacy Policy | Crown Property Management Group Ltd", "Privacy policy for Crown Property Management Group Ltd covering UK GDPR, enquiry data, booking data, careers applications, cookies and analytics.");
   app.innerHTML = legalPage("Privacy Policy", [
-    ["Who CPMG is", "Crown Property Management Group Ltd, company number 16933005, is a private limited company registered at 56 Daventry Road, Bristol, England, BS4 1DQ."],
+    ["Who CPMG is", `Crown Property Management Group Ltd, company number 16933005, is a private limited company registered at ${contact.office}.`],
     ["What personal data is collected", "CPMG may collect name, email, phone, address, postcode, service details, preferred dates, notes, CVs for careers applications, technical data, cookies and analytics data."],
     ["How data is used", "Data is used to respond to enquiries, manage bookings, provide quotes, deliver services, process recruitment applications, improve the website and meet legal obligations."],
     ["Legal basis under UK GDPR", "CPMG may rely on consent, contract, legitimate interests and legal obligation depending on the activity."],
@@ -953,17 +976,20 @@ function injectSchema(path, item) {
       name: "Crown Property Management Group Ltd",
       alternateName: "CPMG",
       url: contact.domain,
+      logo: `${contact.domain}/cpmg-logo.png`,
+      image: `${contact.domain}/og-image.png`,
       email: contact.email,
       telephone: contact.phone,
       address: {
         "@type": "PostalAddress",
-        streetAddress: "56 Daventry Road",
-        addressLocality: "Bristol",
-        postalCode: "BS4 1DQ",
+        streetAddress: contact.officeStreet,
+        addressLocality: contact.officeLocality,
+        postalCode: contact.officePostcode,
         addressCountry: "GB"
       },
       areaServed: "Bristol and surrounding areas",
-      priceRange: "From prices and quote-based services"
+      priceRange: "From prices and quote-based services",
+      openingHours: "Mo-Su 07:00-20:00"
     }
   ];
   const breadcrumbParts = path.split("/").filter(Boolean);
