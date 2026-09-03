@@ -1307,7 +1307,7 @@ function injectSchema(path, item) {
       name: "Crown Property Management Group Ltd",
       alternateName: "CPMG",
       url: contact.domain,
-      logo: `${contact.domain}/cpmg-logo.svg`,
+      logo: `${contact.domain}/cpmg-logo-lockup.jpg`,
       image: `${contact.domain}/og-image.png`,
       email: contact.email,
       telephone: contact.phone,

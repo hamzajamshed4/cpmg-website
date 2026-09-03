@@ -18,7 +18,7 @@
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --container: 1280px;
   --gutter: clamp(18px, 4vw, 48px);
-  --header-h: 84px;
+  --header-h: 92px;
   --h1: clamp(2rem, 3.4vw, 3.15rem);
   --h2: clamp(1.55rem, 2.4vw, 2.15rem);
   --h3: clamp(1.1rem, 1.4vw, 1.3rem);
@@ -85,16 +85,37 @@ img { max-width: 100%; height: auto; display: block; }
   flex: 0 0 auto;
   min-width: 0;
 }
-.brand img,
-.footer-brand img,
-.brand-mark {
-  width: 60px;
-  height: 60px;
+.brand-logo,
+.footer-logo {
+  width: auto;
+  height: 72px;
+  max-width: min(168px, 42vw);
   object-fit: contain;
-  object-position: center;
+  object-position: left center;
   background: transparent;
   border-radius: 0;
   flex: 0 0 auto;
+  display: block;
+}
+.brand img,
+.footer-brand img,
+.brand-mark {
+  width: auto;
+  height: 72px;
+  max-width: min(168px, 42vw);
+  object-fit: contain;
+  object-position: left center;
+  background: transparent;
+  border-radius: 0;
+  flex: 0 0 auto;
+}
+.footer-logo,
+.footer-brand img {
+  height: 88px;
+  max-width: 190px;
+  background: var(--white);
+  padding: 8px;
+  border-radius: 6px;
 }
 .brand strong {
   font-family: var(--font-serif);
@@ -849,18 +870,15 @@ textarea { min-height: 120px; resize: vertical; }
 .footer-grid a { display: block; margin: 8px 0; }
 .footer-grid a:hover { color: #e5d2a0; }
 .footer-brand-block p { margin: 0 0 12px; max-width: 42ch; }
-.footer-brand img {
-  width: 52px;
-  height: 52px;
+.footer-brand img,
+.footer-logo {
+  width: auto;
+  height: 96px;
+  max-width: 200px;
   border-radius: 6px;
-  background: rgba(255,255,255,.96);
-  padding: 4px;
+  background: var(--white);
+  padding: 8px;
   object-fit: contain;
-}
-.footer-brand span {
-  font-family: var(--font-serif);
-  letter-spacing: 0.06em;
-  font-size: 1.1rem;
 }
 .footer-bottom {
   max-width: var(--container);
@@ -966,7 +984,12 @@ textarea { min-height: 120px; resize: vertical; }
     position: static;
   }
   .brand { min-width: 0; }
-  .brand img { width: 48px; height: 48px; }
+  .brand img,
+  .brand-logo {
+    width: auto;
+    height: 58px;
+    max-width: 132px;
+  }
   .brand span { min-width: 0; }
   .brand small { max-width: 160px; }
   .site-header.open .header-panel {
@@ -1053,7 +1076,12 @@ textarea { min-height: 120px; resize: vertical; }
 @media (max-width: 430px) {
   .header-shell { padding-inline: 12px; gap: 6px; }
   .brand { gap: 8px; }
-  .brand img { width: 44px; height: 44px; }
+  .brand img,
+  .brand-logo {
+    width: auto;
+    height: 50px;
+    max-width: 112px;
+  }
   .brand strong { font-size: 15px; }
   .brand small { display: none; }
   .menu-toggle { min-width: 72px; padding: 8px 10px; font-size: 13px; }
