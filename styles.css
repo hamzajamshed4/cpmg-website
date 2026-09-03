@@ -186,7 +186,6 @@ img { max-width: 100%; height: auto; display: block; }
   font-weight: 700;
 }
 .nav-dropdown a:hover { background: var(--paper); color: var(--brand); }
-.header-actions { display: flex; align-items: center; gap: 12px; flex: 0 0 auto; }
 .phone-link { font-weight: 800; color: var(--brand); white-space: nowrap; }
 .menu-toggle {
   display: none;
@@ -1002,10 +1001,7 @@ textarea { min-height: 120px; resize: vertical; }
     box-shadow: none;
     background: transparent;
   }
-  .site-header.open .main-nav > a,
-  .site-header.open .main-nav .nav-careers,
-  .site-header.open .main-nav > a[href="/services/domestic"],
-  .site-header.open .main-nav > a[href="/services/commercial"] {
+  .site-header.open .main-nav .nav-careers {
     display: block;
   }
   .site-header.open .main-nav > a::after,
