@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="80" viewBox="0 0 240 80" role="img" aria-label="VendorGrid Approved Supplier">
+  <defs>
+    <linearGradient id="bgA" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0D2444"/>
+      <stop offset="100%" stop-color="#0B1F3A"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="240" height="80" rx="8" fill="url(#bgA)"/>
+  <!-- Left teal accent -->
+  <rect x="0" y="0" width="5" height="80" rx="2" fill="#0F9D94"/>
+  <!-- Shield body -->
+  <path d="M44 13 L60 19 L60 37 C60 47 44 55 44 55 C44 55 28 47 28 37 L28 19 Z" fill="#0F9D94" opacity="0.12"/>
+  <path d="M44 13 L60 19 L60 37 C60 47 44 55 44 55 C44 55 28 47 28 37 L28 19 Z" fill="none" stroke="#0F9D94" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- Checkmark -->
+  <path d="M36 34 L42 40 L53 27" stroke="#0F9D94" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Divider -->
+  <line x1="74" y1="14" x2="74" y2="66" stroke="#0F9D94" stroke-width="0.5" opacity="0.3"/>
+  <!-- Brand name -->
+  <text x="86" y="32" fill="#0F9D94" font-family="system-ui,-apple-system,Arial,sans-serif" font-size="9" font-weight="700" letter-spacing="2.8">VENDORGRID</text>
+  <!-- Status -->
+  <text x="86" y="51" fill="#ffffff" font-family="system-ui,-apple-system,Arial,sans-serif" font-size="14" font-weight="700" letter-spacing="0.2">Approved Supplier</text>
+  <!-- Bottom rule + URL -->
+  <line x1="86" y1="59" x2="232" y2="59" stroke="#0F9D94" stroke-width="0.5" opacity="0.25"/>
+  <text x="86" y="71" fill="#4a6285" font-family="system-ui,-apple-system,Arial,sans-serif" font-size="8" letter-spacing="0.6">vendorgrid.co.uk · Verified</text>
+</svg>

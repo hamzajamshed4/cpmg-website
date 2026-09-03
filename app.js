@@ -12,6 +12,13 @@ const contact = {
   domain: window.__CPMG_SITE_URL__ || "https://www.cpmanagementgroup.co.uk"
 };
 
+const vendorGrid = {
+  verifyUrl: "https://vendorgrid.co.uk/verify/b5faaqhi7nkc8xo",
+  badgeSrc: "/images/vg-approved.svg",
+  badgeAlt: "VendorGrid Approved Supplier – Click to verify",
+  label: "VendorGrid Approved Supplier"
+};
+
 const badges = ["Insured service model", "Fast response", "Clear quotes", "Domestic & commercial", "Bristol & surrounding areas", "Professional support"];
 const benefits = [
   { title: "Experienced team", text: "Trained operatives with practical property experience across homes and commercial sites." },
@@ -155,7 +162,7 @@ function defaultFaqs(title) {
   return [
     { q: `How is ${title.toLowerCase()} priced?`, a: "Prices are shown as from prices or quote labels. The final quote depends on property size, condition, access, location and requirements." },
     { q: "Can CPMG attend quickly?", a: "Same-day availability may be possible depending on location, team availability and the service required." },
-    { q: "Are staff insured?", a: "CPMG positions its work around professional, insured service delivery and appropriate checks where required." }
+    { q: "Are staff insured?", a: "CPMG positions its work around professional, insured service delivery and appropriate checks where required. CPMG is also a VendorGrid-approved supplier — verification is available on VendorGrid." }
   ];
 }
 
@@ -273,12 +280,31 @@ function bookingHeader() {
 function trustStrip() {
   const items = [
     ["Insured", "Professional service model"],
+    ["VendorGrid", "Approved supplier"],
     ["Bristol based", "Old Stock Exchange office"],
     ["7 days", "7:00am to 8:00pm"],
-    ["Clear quotes", "Confirmed before work"],
-    ["Domestic + Commercial", "One property team"]
+    ["Clear quotes", "Confirmed before work"]
   ];
   return `<section class="trust-strip" aria-label="CPMG trust points"><div class="section-inner trust-strip-grid">${items.map(([title, text]) => `<div><strong>${title}</strong><span>${text}</span></div>`).join("")}</div></section>`;
+}
+
+function vendorGridBadge({ width = 200, className = "vendorgrid-badge" } = {}) {
+  return `<a class="${className}" href="${vendorGrid.verifyUrl}" target="_blank" rel="noopener noreferrer" aria-label="${vendorGrid.badgeAlt}">
+    <img src="${vendorGrid.badgeSrc}" width="${width}" height="${Math.round(width * 80 / 240)}" alt="${vendorGrid.badgeAlt}" loading="lazy" decoding="async" />
+  </a>`;
+}
+
+function vendorGridAccreditationSection() {
+  return `<section class="section vendorgrid-section" aria-labelledby="vendorgrid-heading">
+    <div class="section-inner vendorgrid-panel">
+      <div class="vendorgrid-copy">
+        <span class="eyebrow">Accreditation</span>
+        <h2 id="vendorgrid-heading">VendorGrid verified supplier</h2>
+        <p>CPMG is a VendorGrid-approved supplier. Trade disciplines, compliance status, coverage and response capability are independently verified — click the badge to view the live verification record.</p>
+      </div>
+      ${vendorGridBadge({ width: 220, className: "vendorgrid-badge vendorgrid-badge-lg" })}
+    </div>
+  </section>`;
 }
 
 function homePage() {
@@ -324,6 +350,7 @@ function homePage() {
   ${whyChoose()}
   ${sectorRibbon()}
   ${proofSection()}
+  ${vendorGridAccreditationSection()}
   <section class="section">
     <div class="section-inner commercial-band">
       <div>
@@ -749,7 +776,7 @@ function aboutPage() {
     <div>
       <h2>Company overview</h2>
       <p>Crown Property Management Group Ltd (CPMG) provides cleaning, maintenance, grounds care, waste removal and related property services across domestic and commercial sectors.</p>
-      <p>Company number: 16933005. Registered office: ${contact.office}. The company works to an insured service model and confirms scope, access and quote details before work begins.</p>
+      <p>Company number: 16933005. Registered office: ${contact.office}. The company works to an insured service model, holds VendorGrid approved-supplier status, and confirms scope, access and quote details before work begins.</p>
     </div>
     <div class="stat-grid">
       <div class="stat-card"><strong>Bristol</strong><span>Service area focus</span></div>
@@ -762,6 +789,7 @@ function aboutPage() {
     <div><h2>Who CPMG helps</h2><ul class="list"><li>Homeowners and tenants</li><li>Landlords and letting agents</li><li>Property managers and facilities teams</li><li>Businesses and commercial premises</li></ul></div>
     <div><h2>Services provided</h2><ul class="list"><li>Domestic cleaning and tenancy cleans</li><li>Commercial and communal area cleaning</li><li>Grounds and garden maintenance</li><li>Waste removal and fire alarm callout support</li></ul></div>
   </div></section>
+  ${vendorGridAccreditationSection()}
   ${gallerySection()}
   ${whyChoose()}
   ${cta("Ready for cleaner, safer property?", "Book a service or speak to CPMG about your property support requirements.", "Book a Service", "Contact CPMG")}`;
@@ -1147,7 +1175,19 @@ function injectSchema(path, item) {
       },
       areaServed: "Bristol and surrounding areas",
       priceRange: "From prices and quote-based services",
-      openingHours: "Mo-Su 07:00-20:00"
+      openingHours: "Mo-Su 07:00-20:00",
+      award: vendorGrid.label,
+      hasCredential: {
+        "@type": "EducationalOccupationalCredential",
+        credentialCategory: "certification",
+        name: vendorGrid.label,
+        url: vendorGrid.verifyUrl,
+        recognizedBy: {
+          "@type": "Organization",
+          name: "VendorGrid",
+          url: "https://vendorgrid.co.uk"
+        }
+      }
     }
   ];
   const breadcrumbParts = path.split("/").filter(Boolean);
