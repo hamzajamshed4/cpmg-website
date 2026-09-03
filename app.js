@@ -41,7 +41,28 @@ const serviceOptions = [
   "Fire Alarm Callout",
   "Waste Removal",
   "Sparkle Cleaning",
+  "Security Guarding",
+  "Mobile Patrols",
+  "Key Holding & Alarm Response",
   "Other"
+];
+
+const securityServices = [
+  { title: "Security Guarding", text: "Professional security officers providing a visible presence, access control, visitor management and site protection for commercial premises." },
+  { title: "Mobile Patrols", text: "Scheduled or randomised patrols helping protect commercial premises, construction sites and other properties with clear reporting." },
+  { title: "Key Holding & Alarm Response", text: "Secure key holding and coordinated response support for alarms and incidents, arranged around the needs of each site." },
+  { title: "Construction Site Security", text: "Security personnel helping protect construction sites, plant, materials and controlled access points throughout the project lifecycle." },
+  { title: "Retail Security", text: "Professional security support helping businesses reduce theft, improve safety and maintain a secure trading environment." },
+  { title: "Event Security", text: "Security personnel supporting access management, crowd safety and protection of staff, visitors and assets at events." },
+  { title: "Reception & Concierge Security", text: "Front-of-house security combining professional customer service with site protection and access management." },
+  { title: "Vacant Property Security", text: "Security inspections and patrols supporting the protection of vacant commercial properties between tenancies or ownership periods." }
+];
+
+const securityTrustPoints = [
+  { title: "Professional Personnel", text: "Security officers selected for professionalism, reliability and clear communication on site." },
+  { title: "Tailored Security Plans", text: "Services configured around the requirements and risks of each individual site." },
+  { title: "Responsive Support", text: "Clear communication and management support throughout the engagement." },
+  { title: "Detailed Reporting", text: "Professional incident and patrol reporting providing accountability and visibility." }
 ];
 const bookingServiceTitles = serviceOptions.filter((item) => item !== "Other");
 const serviceCommitments = ["Clear enquiry handling", "Quote confirmation before work begins", "Accessible contact routes", "Professional conduct on site"];
@@ -67,7 +88,8 @@ const photos = {
   carpet: "/images/carpet.jpg",
   kitchen: "/images/kitchen-clean.jpg",
   hallway: "/images/hallway.jpg",
-  sparkle: "/images/sparkle.jpg"
+  sparkle: "/images/sparkle.jpg",
+  security: "/images/security-hero.jpg"
 };
 
 const serviceImages = {
@@ -80,6 +102,7 @@ const serviceImages = {
   kitchen: photoLayer(photos.kitchen, "linear-gradient(135deg, rgba(49,76,99,.76), rgba(66,111,92,.64))"),
   hallway: photoLayer(photos.hallway, "linear-gradient(135deg, rgba(24,39,54,.8), rgba(93,127,155,.64))"),
   sparkle: photoLayer(photos.sparkle, "linear-gradient(135deg, rgba(24,39,54,.76), rgba(93,127,155,.58))"),
+  security: photoLayer(photos.security, "linear-gradient(135deg, rgba(12,20,30,.82), rgba(49,76,99,.7))"),
   hero: photoLayer(photos.hero, "linear-gradient(105deg, rgba(18,28,38,.88), rgba(47,72,93,.62) 55%, rgba(47,72,93,.38))")
 };
 
@@ -172,6 +195,21 @@ document.querySelector("[data-menu-toggle]").addEventListener("click", () => {
   const header = document.querySelector("[data-header]");
   const open = header.classList.toggle("open");
   document.querySelector("[data-menu-toggle]").setAttribute("aria-expanded", open ? "true" : "false");
+  if (!open) closeDropdowns();
+});
+document.querySelectorAll("[data-dropdown]").forEach((item) => {
+  const trigger = item.querySelector(".nav-trigger");
+  if (!trigger) return;
+  trigger.addEventListener("click", (event) => {
+    event.preventDefault();
+    const willOpen = !item.classList.contains("open");
+    closeDropdowns();
+    item.classList.toggle("open", willOpen);
+    trigger.setAttribute("aria-expanded", willOpen ? "true" : "false");
+  });
+});
+document.addEventListener("click", (event) => {
+  if (!event.target.closest("[data-dropdown]")) closeDropdowns();
 });
 window.addEventListener("scroll", () => {
   document.querySelector("[data-header]")?.classList.toggle("is-scrolled", window.scrollY > 8);
@@ -184,9 +222,18 @@ document.addEventListener("click", (event) => {
   event.preventDefault();
   history.pushState(null, "", url.pathname);
   document.querySelector("[data-header]").classList.remove("open");
+  document.querySelector("[data-menu-toggle]")?.setAttribute("aria-expanded", "false");
+  closeDropdowns();
   render();
 });
 window.addEventListener("popstate", render);
+
+function closeDropdowns() {
+  document.querySelectorAll("[data-dropdown].open").forEach((item) => {
+    item.classList.remove("open");
+    item.querySelector(".nav-trigger")?.setAttribute("aria-expanded", "false");
+  });
+}
 
 function render() {
   const path = location.pathname.replace(/\/$/, "") || "/";
@@ -195,6 +242,7 @@ function render() {
     "/": homePage,
     "/services/domestic": () => categoryPage("domestic"),
     "/services/commercial": () => categoryPage("commercial"),
+    "/services/security": securityPage,
     "/booking": bookingPage,
     "/contact": contactPage,
     "/about": aboutPage,
@@ -235,7 +283,7 @@ function canonicalUrl() {
   return `${contact.domain}${path === "/" ? "/" : path}`;
 }
 
-function hero({ brand = "Crown Property Management Group", title, text, primary = "Book a Service", secondary = "Request a Quote", image = serviceImages.hero, variant = "home" }) {
+function hero({ brand = "Crown Property Management Group", title, text, primary = "Request a Quote", secondary = "Explore Services", image = serviceImages.hero, variant = "home", primaryHref = "/contact", secondaryHref = "/services/security" }) {
   const isHome = variant === "home";
   return `<section class="hero ${isHome ? "hero-home" : "hero-compact"}" style="--hero-image:${image}">
     <div class="hero-inner ${isHome ? "hero-inner-home" : ""}">
@@ -244,16 +292,16 @@ function hero({ brand = "Crown Property Management Group", title, text, primary 
         <h1>${title}</h1>
         <p class="lead">${text}</p>
         <div class="actions">
-          <a class="button primary" href="/booking" data-link>${primary}</a>
-          <a class="button outline" href="/contact" data-link>${secondary}</a>
+          <a class="button primary" href="${primaryHref}" data-link>${primary}</a>
+          <a class="button outline" href="${secondaryHref}" data-link>${secondary}</a>
         </div>
       </div>
     </div>
   </section>`;
 }
 
-function pageHeader({ eyebrow, title, text, primary = "", secondary = "", image = "" }) {
-  const actions = primary || secondary ? `<div class="actions slim-actions">${primary ? `<a class="button primary" href="/booking" data-link>${primary}</a>` : ""}${secondary ? `<a class="button outline" href="/contact" data-link>${secondary}</a>` : ""}</div>` : "";
+function pageHeader({ eyebrow, title, text, primary = "", secondary = "", image = "", primaryHref = "/contact", secondaryHref = "/booking" }) {
+  const actions = primary || secondary ? `<div class="actions slim-actions">${primary ? `<a class="button primary" href="${primaryHref}" data-link>${primary}</a>` : ""}${secondary ? `<a class="button outline" href="${secondaryHref}" data-link>${secondary}</a>` : ""}</div>` : "";
   const style = image ? ` style="--page-image:${image}"` : "";
   return `<section class="page-header ${image ? "page-header-visual" : ""}"${style}>
     <div class="section-inner">
@@ -295,45 +343,88 @@ function vendorGridBadge({ width = 200, className = "vendorgrid-badge" } = {}) {
 }
 
 function vendorGridAccreditationSection() {
-  return `<section class="section vendorgrid-section" aria-labelledby="vendorgrid-heading">
+  return `<section class="section alt vendorgrid-section" aria-labelledby="vendorgrid-heading">
     <div class="section-inner vendorgrid-panel">
       <div class="vendorgrid-copy">
         <span class="eyebrow">Accreditation</span>
         <h2 id="vendorgrid-heading">VendorGrid verified supplier</h2>
         <p>CPMG is a VendorGrid-approved supplier. Trade disciplines, compliance status, coverage and response capability are independently verified — click the badge to view the live verification record.</p>
       </div>
-      ${vendorGridBadge({ width: 220, className: "vendorgrid-badge vendorgrid-badge-lg" })}
+      ${vendorGridBadge({ width: 180, className: "vendorgrid-badge vendorgrid-badge-lg" })}
+    </div>
+  </section>`;
+}
+
+function coreServicesSection() {
+  const items = [
+    ["Security Services", "Professional guarding, patrols, key holding and site protection for commercial and managed properties.", "/services/security", serviceImages.security, "Explore security"],
+    ["Cleaning Services", "Domestic and commercial cleaning including tenancy cleans, offices, communal areas and sparkle presentation.", "/services/domestic", serviceImages.domestic, "View cleaning"],
+    ["Facilities Support", "Commercial property support including waste removal, windows, fire alarm callout and managed-site care.", "/services/commercial", serviceImages.commercial, "View facilities"],
+    ["Grounds & Landscaping", "Garden care and commercial grounds maintenance for homes, estates and managed sites.", "/services/domestic/landscaping-and-garden", serviceImages.garden, "View grounds"]
+  ];
+  return `<section class="section">
+    <div class="section-inner">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Core services</span>
+          <h2>Security, cleaning and facilities support</h2>
+        </div>
+        <p>One Bristol-based team covering the property services commercial clients and homeowners ask for most.</p>
+      </div>
+      <div class="core-services-grid">
+        ${items.map(([title, text, href, image, label]) => `<a class="core-service-card" href="${href}" data-link>
+          <div class="core-service-media" style="--image:${image}" role="img" aria-label="${title}"></div>
+          <div class="core-service-body">
+            <h3>${title}</h3>
+            <p>${text}</p>
+            <span>${label}</span>
+          </div>
+        </a>`).join("")}
+      </div>
+    </div>
+  </section>`;
+}
+
+function securityHighlightSection() {
+  return `<section class="section">
+    <div class="section-inner">
+      <div class="security-highlight">
+        <div>
+          <span class="eyebrow">Security</span>
+          <h2>Protecting people, premises and assets</h2>
+          <p>CPMG provides professional security services for commercial properties, construction sites, retail environments and events — planned around each site’s access, risk profile and reporting needs.</p>
+        </div>
+        <div class="actions">
+          <a class="button primary" href="/services/security" data-link>Explore Security Services</a>
+          <a class="button outline" href="/contact" data-link>Request a Security Quote</a>
+        </div>
+      </div>
     </div>
   </section>`;
 }
 
 function homePage() {
-  setMeta("Crown Property Management Group Ltd | Cleaning and Property Support", "Professional cleaning, property maintenance, grounds care and waste removal services for homes, landlords, businesses and property managers in Bristol and surrounding areas.");
+  setMeta("Crown Property Management Group Ltd | Cleaning, Facilities and Security", "Professional cleaning, facilities support, grounds care and security services for homes, landlords, businesses and property managers in Bristol and surrounding areas.");
   const featured = featuredServiceSlugs.map((slug) => services.find((item) => item.slug === slug)).filter(Boolean);
   app.innerHTML = `${hero({
     title: "Property care that looks after Bristol homes and workplaces.",
-    text: "Insured cleaning, maintenance, grounds care and waste support for landlords, managers and businesses — planned clearly and delivered professionally.",
-    primary: "Book a Service",
-    secondary: "Get a Quote",
+    text: "Insured cleaning, facilities support, grounds care, security and waste services for landlords, managers and businesses — planned clearly and delivered professionally.",
+    primary: "Request a Quote",
+    secondary: "Explore Security",
     image: serviceImages.hero,
     variant: "home"
   })}
   ${trustStrip()}
-  <section class="section pathway-section">
-    <div class="section-inner">
-      <div class="section-head">
-        <div>
-          <span class="eyebrow">Services</span>
-          <h2>Choose the right path for your property</h2>
-        </div>
-        <p>Domestic care for homes and tenancies, or commercial support for offices, blocks and managed estates.</p>
+  <section class="section alt">
+    <div class="section-inner intro-band">
+      <div>
+        <span class="eyebrow">Introduction</span>
+        <h2>A practical property services partner for Bristol</h2>
       </div>
-      <div class="pathway-grid">
-        ${pathwayPanel("Domestic", "Homes, tenants and landlords", "Carpet cleaning, end of tenancy cleans, deep cleans and garden care — booked with clear from prices where practical.", "/services/domestic", serviceImages.domestic, "View domestic services")}
-        ${pathwayPanel("Commercial", "Offices, blocks and estates", "Office cleaning, communal areas, windows, grounds, waste removal, sparkle cleans and fire alarm callout support.", "/services/commercial", serviceImages.commercial, "View commercial services")}
-      </div>
+      <p>CPMG supports homeowners, landlords, property managers and commercial clients with clear quotes, professional attendance and dependable delivery across cleaning, facilities, grounds and security.</p>
     </div>
   </section>
+  ${coreServicesSection()}
   <section class="section alt">
     <div class="section-inner">
       <div class="section-head">
@@ -346,25 +437,79 @@ function homePage() {
       <div class="featured-grid">${featured.map(featuredServiceTile).join("")}</div>
     </div>
   </section>
-  ${processSteps()}
   ${whyChoose()}
+  ${securityHighlightSection()}
   ${sectorRibbon()}
-  ${proofSection()}
   ${vendorGridAccreditationSection()}
-  <section class="section">
-    <div class="section-inner commercial-band">
-      <div>
-        <span class="eyebrow">Commercial clients</span>
-        <h2>Contracts and callouts for managed property</h2>
-        <p>From recurring office cleans to urgent site support, CPMG quotes around specification, access, frequency and urgency.</p>
-      </div>
+  ${cta("Ready to talk about your property requirements?", "Tell CPMG what you need. The team will confirm availability, pricing and next steps.", "Request a Quote", "Speak to CPMG")}`;
+}
+
+function securityPage() {
+  setMeta("Security Services | Crown Property Management Group Ltd", "Professional security services including guarding, mobile patrols, key holding, construction site security, retail security and event support in Bristol and surrounding areas.");
+  app.innerHTML = `<section class="security-hero">
+    <div class="security-hero-inner">
+      <span class="eyebrow">Security services</span>
+      <h1>Professional Security Services</h1>
+      <p class="lead">Protecting your people, premises and assets with dependable security solutions tailored to your organisation.</p>
+      <p class="support">Supporting businesses, commercial properties, construction sites, retail environments and events with professional security personnel.</p>
       <div class="actions">
-        <a class="button primary" href="/services/commercial" data-link>Explore commercial services</a>
-        <a class="button outline" href="/contact" data-link>Request a commercial quote</a>
+        <a class="button primary" href="/contact" data-link>Request a Security Quote</a>
+        <a class="button outline" href="#security-services" data-link-hash>Explore Security Services</a>
       </div>
     </div>
   </section>
-  ${cta("Ready for cleaner, better-managed property?", "Tell CPMG what you need. The team will confirm availability, pricing and next steps.", "Book a Service", "Speak to CPMG")}`;
+  <section class="section" id="security-services">
+    <div class="section-inner">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Capabilities</span>
+          <h2>Security services for commercial sites</h2>
+        </div>
+        <p>Original CPMG security offerings designed around practical site protection, access control and clear reporting.</p>
+      </div>
+      <div class="security-grid">
+        ${securityServices.map((item) => `<article class="security-card"><h3>${item.title}</h3><p>${item.text}</p></article>`).join("")}
+      </div>
+    </div>
+  </section>
+  <section class="section alt">
+    <div class="section-inner">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Why CPMG security</span>
+          <h2>Security you can depend on</h2>
+        </div>
+        <p>Practical standards focused on people, process and accountability — without inflated claims.</p>
+      </div>
+      <div class="security-trust-grid">
+        ${securityTrustPoints.map((item) => `<article class="security-trust-item"><h3>${item.title}</h3><p>${item.text}</p></article>`).join("")}
+      </div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="section-inner split">
+      <div>
+        <h2>How CPMG approaches security</h2>
+        <p>Every site is different. CPMG reviews access requirements, operating hours, visitor flow, risk points and reporting expectations before confirming the right security arrangement.</p>
+        <p>Where licensed security personnel are required for a role, CPMG arranges appropriately licensed officers for the contracted duties. We do not claim SIA Approved Contractor Scheme membership, ISO certification or 24/7 control-room ownership.</p>
+      </div>
+      <div class="quote-band">
+        <h3>Need a security quote?</h3>
+        <p>Share your site type, hours, access arrangements and the level of presence required. CPMG will confirm suitability and next steps.</p>
+        <div class="actions">
+          <a class="button primary" href="/contact" data-link>Request a Security Quote</a>
+          <a class="button outline" href="tel:01172870518">Call 0117 287 0518</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  ${cta("Discuss your security requirements", "Contact CPMG for a clear conversation about guarding, patrols, key holding or site protection.", "Request a Security Quote", "Contact CPMG")}`;
+  document.querySelectorAll("[data-link-hash]").forEach((link) => {
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      document.querySelector("#security-services")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
 }
 
 function pathwayPanel(title, kicker, text, href, image, label) {
@@ -586,7 +731,7 @@ function commitmentsSection() {
 }
 
 function cta(title, text, primary, secondary) {
-  return `<section class="section cta-section"><div class="section-inner quote-band cta-band"><div><h2>${title}</h2><p>${text}</p></div><div class="actions"><a class="button primary" href="/booking" data-link>${primary}</a><a class="button outline" href="/contact" data-link>${secondary}</a></div></div></section>`;
+  return `<section class="section cta-section"><div class="section-inner quote-band cta-band"><div><h2>${title}</h2><p>${text}</p></div><div class="actions"><a class="button primary" href="/contact" data-link>${primary}</a><a class="button outline" href="/booking" data-link>${secondary}</a></div></div></section>`;
 }
 
 function bookingPage() {
@@ -775,7 +920,7 @@ function aboutPage() {
   <section class="section"><div class="section-inner split about-split">
     <div>
       <h2>Company overview</h2>
-      <p>Crown Property Management Group Ltd (CPMG) provides cleaning, maintenance, grounds care, waste removal and related property services across domestic and commercial sectors.</p>
+      <p>Crown Property Management Group Ltd (CPMG) provides cleaning, facilities support, grounds care, security, waste removal and related property services across domestic and commercial sectors.</p>
       <p>Company number: 16933005. Registered office: ${contact.office}. The company works to an insured service model, holds VendorGrid approved-supplier status, and confirms scope, access and quote details before work begins.</p>
     </div>
     <div class="stat-grid">
@@ -787,7 +932,7 @@ function aboutPage() {
   </div></section>
   <section class="section alt"><div class="section-inner grid two">
     <div><h2>Who CPMG helps</h2><ul class="list"><li>Homeowners and tenants</li><li>Landlords and letting agents</li><li>Property managers and facilities teams</li><li>Businesses and commercial premises</li></ul></div>
-    <div><h2>Services provided</h2><ul class="list"><li>Domestic cleaning and tenancy cleans</li><li>Commercial and communal area cleaning</li><li>Grounds and garden maintenance</li><li>Waste removal and fire alarm callout support</li></ul></div>
+    <div><h2>Services provided</h2><ul class="list"><li>Domestic cleaning and tenancy cleans</li><li>Commercial and communal area cleaning</li><li>Security guarding, patrols and key holding</li><li>Grounds, garden maintenance and waste removal</li></ul></div>
   </div></section>
   ${vendorGridAccreditationSection()}
   ${gallerySection()}
@@ -1162,7 +1307,7 @@ function injectSchema(path, item) {
       name: "Crown Property Management Group Ltd",
       alternateName: "CPMG",
       url: contact.domain,
-      logo: `${contact.domain}/cpmg-logo.png`,
+      logo: `${contact.domain}/cpmg-logo.svg`,
       image: `${contact.domain}/og-image.png`,
       email: contact.email,
       telephone: contact.phone,
