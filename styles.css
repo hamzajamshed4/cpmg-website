@@ -61,6 +61,22 @@ img { max-width: 100%; height: auto; display: block; }
   min-height: var(--header-h);
   padding-block: 10px;
 }
+.header-panel {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
+  min-width: 0;
+}
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 0 0 auto;
+}
+.header-actions .button {
+  white-space: nowrap;
+}
 .brand, .footer-brand {
   display: flex;
   align-items: center;
@@ -72,8 +88,8 @@ img { max-width: 100%; height: auto; display: block; }
 .brand img,
 .footer-brand img,
 .brand-mark {
-  width: 56px;
-  height: 56px;
+  width: 60px;
+  height: 60px;
   object-fit: contain;
   object-position: center;
   background: transparent;
@@ -96,13 +112,6 @@ img { max-width: 100%; height: auto; display: block; }
   max-width: 210px;
   line-height: 1.25;
   margin-top: 2px;
-}
-.header-panel {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  margin-left: auto;
-  min-width: 0;
 }
 .main-nav {
   display: flex;
@@ -208,13 +217,15 @@ img { max-width: 100%; height: auto; display: block; }
 .secondary { background: var(--brand); color: var(--white); }
 .outline { border-color: var(--line); background: var(--white); color: var(--brand); }
 .quote-band .outline,
-.hero .outline {
+.hero .outline,
+.security-hero .outline {
   border-color: rgba(255,255,255,.55);
   background: transparent;
   color: var(--white);
 }
 .quote-band .outline:hover,
-.hero .outline:hover {
+.hero .outline:hover,
+.security-hero .outline:hover {
   background: rgba(255,255,255,.1);
 }
 .menu-toggle { display: none; background: var(--paper); color: var(--brand); border-color: var(--line); }
@@ -930,9 +941,7 @@ textarea { min-height: 120px; resize: vertical; }
 }
 
 @media (max-width: 1200px) {
-  .main-nav .nav-careers,
-  .main-nav > a[href="/services/domestic"],
-  .main-nav > a[href="/services/commercial"] { display: none; }
+  .main-nav .nav-careers { display: none; }
 }
 
 @media (max-width: 1100px) {
@@ -992,6 +1001,12 @@ textarea { min-height: 120px; resize: vertical; }
     padding: 0;
     box-shadow: none;
     background: transparent;
+  }
+  .site-header.open .main-nav > a,
+  .site-header.open .main-nav .nav-careers,
+  .site-header.open .main-nav > a[href="/services/domestic"],
+  .site-header.open .main-nav > a[href="/services/commercial"] {
+    display: block;
   }
   .site-header.open .main-nav > a::after,
   .site-header.open .nav-trigger::after { display: none; }
